@@ -247,6 +247,8 @@ function getOrCreateOfferUI(card) {
 function clearOfferUI(card) {
   const box = card.querySelector('[data-offer-box]');
   if (box) box.remove();
+  card.classList.remove('has-offer', 'offer-active', 'offer-upcoming');
+  card.removeAttribute('data-offer-state');
 }
 
 function renderProductOffers() {
@@ -257,6 +259,8 @@ function renderProductOffers() {
   productCards.forEach((card) => {
     const productId = card.getAttribute('data-product-id');
     if (!productId) return;
+    card.classList.remove('has-offer', 'offer-active', 'offer-upcoming');
+    card.removeAttribute('data-offer-state');
 
     const offer = normalizeOffer(offers[productId]);
     if (!offer) {
@@ -281,6 +285,7 @@ function renderProductOffers() {
       return;
     }
 
+    card.classList.add('has-offer');
     const box = getOrCreateOfferUI(card);
     const badge = box.querySelector('[data-offer-badge]');
     const state = box.querySelector('[data-offer-state]');
@@ -297,6 +302,8 @@ function renderProductOffers() {
         ? `Oferta este valabila: ${formatCountdown(endTime - now)}`
         : `Incepe in: ${formatCountdown(startTime - now)}`;
     }
+    card.classList.add(isActive ? 'offer-active' : 'offer-upcoming');
+    card.setAttribute('data-offer-state', isActive ? 'active' : 'upcoming');
   });
 }
 
@@ -353,8 +360,9 @@ function renderOffersZone() {
           const narrative = item.isActive
             ? `Economisesti ${item.offer.discount}% daca plasezi comanda in aceasta fereastra de timp.`
             : 'Oferta este programata. Se va activa automat la data si ora de start.';
+          const cardStateClass = item.isActive ? 'is-active' : 'is-upcoming';
           return `
-            <article class="card offer-zone-card">
+            <article class="card offer-zone-card ${cardStateClass}">
               <div class="offer-zone-media">
                 <img src="${item.product.image}" loading="lazy" width="500" height="380" alt="${item.product.name}">
                 <div class="offer-zone-media-overlay">
@@ -363,7 +371,10 @@ function renderOffersZone() {
                 </div>
               </div>
               <div class="offer-zone-body">
-                <p class="offer-zone-kicker">Oferta limitata</p>
+                <div class="offer-zone-headline">
+                  <p class="offer-zone-kicker">Oferta limitata</p>
+                  <span class="offer-zone-hint">${item.isActive ? 'Disponibila acum' : 'Urmeaza curand'}</span>
+                </div>
                 <h3>${item.product.name}</h3>
                 <p class="offer-zone-copy">${item.product.description}</p>
                 <p class="offer-zone-note">${narrative}</p>
