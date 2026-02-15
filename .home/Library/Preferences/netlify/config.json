@@ -1,0 +1,16 @@
+{
+	"telemetryDisabled": false,
+	"cliId": "b7a29ac7-feec-4b6f-9fea-0e0ecf115027",
+	"userId": "647f76bc29b2f75e73aa1707",
+	"users": {
+		"647f76bc29b2f75e73aa1707": {
+			"id": "647f76bc29b2f75e73aa1707",
+			"name": null,
+			"email": "thetechologyhub@gmail.com",
+			"auth": {
+				"token": "nfc_KShTsojQaSixabLnkjFskoynSarsjXapac3e",
+				"github": {}
+			}
+		}
+	}
+}

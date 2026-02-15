@@ -398,13 +398,17 @@ function renderProductOffers() {
     const countdown = box.querySelector('[data-offer-countdown]');
 
     if (badge) badge.textContent = `-${offer.discount}%`;
-    if (state) state.textContent = isActive ? 'Oferta activa' : 'Oferta programata';
-    if (title) title.textContent = `Reducere aplicata la ${getProductName(productId)}`;
+    if (state) state.textContent = isActive ? 'Activa acum' : 'Se activeaza curand';
+    if (title) {
+      title.textContent = isActive
+        ? `Comanda acum ${getProductName(productId)} la un pret mai bun.`
+        : `Planifica pentru ${getProductName(productId)} si prinde reducerea din start.`;
+    }
     if (period) period.textContent = `Perioada: ${formatDate(offer.start)} - ${formatDate(offer.end)}`;
     if (countdown) {
       countdown.textContent = isActive
-        ? `Oferta este valabila: ${formatCountdown(endTime - now)}`
-        : `Incepe in: ${formatCountdown(startTime - now)}`;
+        ? `Expira in: ${formatCountdown(endTime - now)}`
+        : `Porneste in: ${formatCountdown(startTime - now)}`;
     }
     card.classList.add(isActive ? 'offer-active' : 'offer-upcoming');
     card.setAttribute('data-offer-state', isActive ? 'active' : 'upcoming');
@@ -446,8 +450,8 @@ function renderOffersZone() {
   if (!offerItems.length) {
     offersZone.innerHTML = `
       <article class="card offer-empty-card">
-        <h3>Momentan nu exista oferte active</h3>
-        <p>Urmareste aceasta zona. Cand apar reduceri, produsele vor fi listate automat cu procent si perioada.</p>
+        <h3>Pregatim urmatoarele promotii</h3>
+        <p>Revino curand. Ofertele active si programate apar automat aici cu interval clar si countdown in timp real.</p>
         <a class="btn-outline" href="meniu.html">Vezi meniul complet</a>
       </article>
     `;
@@ -460,10 +464,10 @@ function renderOffersZone() {
         .map((item) => {
           const remaining = item.isActive ? item.endTime - now : item.startTime - now;
           const stateLabel = item.isActive ? 'Activa acum' : 'Programata';
-          const countdownLabel = item.isActive ? 'Oferta este valabila' : 'Incepe in';
+          const countdownLabel = item.isActive ? 'Expira in' : 'Porneste in';
           const narrative = item.isActive
-            ? `Economisesti ${item.offer.discount}% daca plasezi comanda in aceasta fereastra de timp.`
-            : 'Oferta este programata. Se va activa automat la data si ora de start.';
+            ? `Economisesti ${item.offer.discount}% acum si ridici rapid comanda din locatie, fara pasi suplimentari.`
+            : `Oferta este deja setata. Se activeaza automat si iti aduce ${item.offer.discount}% reducere in intervalul anuntat.`;
           const cardStateClass = item.isActive ? 'is-active' : 'is-upcoming';
           return `
             <article class="card offer-zone-card ${cardStateClass}">
@@ -476,15 +480,15 @@ function renderOffersZone() {
               </div>
               <div class="offer-zone-body">
                 <div class="offer-zone-headline">
-                  <p class="offer-zone-kicker">Oferta limitata</p>
-                  <span class="offer-zone-hint">${item.isActive ? 'Disponibila acum' : 'Urmeaza curand'}</span>
+                  <p class="offer-zone-kicker">Oferta limitata in timp</p>
+                  <span class="offer-zone-hint">${item.isActive ? 'Comanda acum' : 'Pregateste comanda'}</span>
                 </div>
                 <h3>${item.product.name}</h3>
                 <p class="offer-zone-copy">${item.product.description}</p>
                 <p class="offer-zone-note">${narrative}</p>
                 <p class="offer-zone-period">Perioada: ${formatDate(item.offer.start)} - ${formatDate(item.offer.end)}</p>
                 <p class="offer-zone-countdown"><span class="offer-clock" aria-hidden="true"></span>${countdownLabel}: ${formatCountdown(remaining)}</p>
-                <a class="btn menu-call-btn" href="tel:+40755516039">Comanda telefonic acum</a>
+                <a class="btn menu-call-btn" href="tel:+40755516039">${item.isActive ? 'Prinde oferta acum' : 'Seteaza comanda telefonic'}</a>
               </div>
             </article>
           `;
