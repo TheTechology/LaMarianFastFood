@@ -1007,6 +1007,16 @@ html[data-theme="light"] .hero-info-card {
   gap: 10px;
 }
 
+.offer-zone-media-overlay .product-offer-badge {
+  min-width: 126px;
+  padding: 12px 20px;
+  font-size: 1.45rem;
+  letter-spacing: 0.015em;
+  box-shadow:
+    0 14px 28px rgba(255, 92, 35, 0.42),
+    0 0 18px rgba(255, 118, 72, 0.24);
+}
+
 .offer-zone-head {
   display: flex;
   align-items: center;
@@ -1085,10 +1095,17 @@ html[data-theme="light"] .hero-info-card {
 
 .offer-zone-period {
   margin-top: 2px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 189, 166, 0.5);
+  background:
+    linear-gradient(140deg, rgba(255, 111, 69, 0.22), rgba(255, 152, 117, 0.1)),
+    rgba(255, 255, 255, 0.06);
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #fff1ea;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .offer-zone-countdown {
@@ -1185,9 +1202,17 @@ html[data-theme="light"] .offer-zone-note {
 }
 
 html[data-theme="light"] .offer-zone-period {
-  border-color: #dce5f1;
-  background: rgba(248, 251, 255, 0.9);
-  color: #41556f;
+  border-color: #efb8a4;
+  background:
+    linear-gradient(140deg, rgba(255, 150, 114, 0.28), rgba(255, 226, 210, 0.52)),
+    rgba(255, 255, 255, 0.94);
+  color: #8e3f27;
+}
+
+html[data-theme="light"] .offer-zone-media-overlay .product-offer-badge {
+  box-shadow:
+    0 12px 24px rgba(245, 123, 88, 0.3),
+    0 0 16px rgba(245, 123, 88, 0.22);
 }
 
 html[data-theme="light"] .offer-zone-card.is-active {
