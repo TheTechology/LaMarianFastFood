@@ -136,6 +136,7 @@ const isAdminPage = Boolean(d.querySelector('[data-admin-gate]'));
 let offersCache = {};
 let offersCacheReady = false;
 let adminAuthCache = null;
+let lastOfferWriteError = '';
 const productCards = Array.from(d.querySelectorAll('[data-product-id]'));
 const productCatalog = [
   { id: 'burger-black-angus', name: 'Burger Black Angus', image: 'assets/img/burger-black-angus.png', description: 'Carne suculenta, cheddar maturat si sos burger signature.' },
@@ -220,7 +221,9 @@ async function refreshOffersFromServer() {
 async function writeOffers(offers) {
   const normalized = sanitizeOffersMap(offers);
   const auth = getAdminAuth();
+  lastOfferWriteError = '';
   if (!auth) {
+    lastOfferWriteError = 'Lipsesc credentialele admin pentru request-ul server.';
     if (isAdminPage) return false;
     offersCache = normalized;
     offersCacheReady = true;
@@ -238,6 +241,13 @@ async function writeOffers(offers) {
       body: JSON.stringify(normalized)
     });
     if (!response.ok) {
+      let detail = '';
+      try {
+        detail = await response.text();
+      } catch (err) {
+        detail = '';
+      }
+      lastOfferWriteError = `Server ${response.status}${detail ? `: ${detail}` : ''}`;
       if (isAdminPage) return false;
       offersCache = normalized;
       offersCacheReady = true;
@@ -248,11 +258,16 @@ async function writeOffers(offers) {
     saveOffersToLocalStorage(normalized);
     return true;
   } catch (err) {
+    lastOfferWriteError = 'Nu s-a putut contacta functia server pentru oferte.';
     if (isAdminPage) return false;
     offersCache = normalized;
     offersCacheReady = true;
     return saveOffersToLocalStorage(normalized);
   }
+}
+
+function getOfferWriteError() {
+  return lastOfferWriteError ? ` (${lastOfferWriteError})` : '';
 }
 
 function parseDate(value) {
@@ -592,7 +607,7 @@ function initOfferAdmin() {
     const offers = await syncOffersBeforeAction();
     offers[productId] = { discount: Math.round(discount), start, end };
     if (!(await writeOffers(offers))) {
-      setStatus('Eroare la salvare. Verifica functia server pentru oferte.', true);
+      setStatus(`Eroare la salvare. Verifica functia server pentru oferte.${getOfferWriteError()}`, true);
       return;
     }
 
@@ -613,7 +628,7 @@ function initOfferAdmin() {
     const offers = await syncOffersBeforeAction();
     delete offers[productId];
     if (!(await writeOffers(offers))) {
-      setStatus('Eroare la stergere. Verifica functia server pentru oferte.', true);
+      setStatus(`Eroare la stergere. Verifica functia server pentru oferte.${getOfferWriteError()}`, true);
       return;
     }
 
@@ -644,7 +659,7 @@ function initOfferAdmin() {
       const offers = await syncOffersBeforeAction();
       delete offers[productId];
       if (!(await writeOffers(offers))) {
-        setStatus('Eroare la stergere. Verifica functia server pentru oferte.', true);
+        setStatus(`Eroare la stergere. Verifica functia server pentru oferte.${getOfferWriteError()}`, true);
         return;
       }
       await refreshOffersFromServer();
@@ -680,7 +695,7 @@ function initOfferAdmin() {
     const offers = await syncOffersBeforeAction();
     offers[productId] = { discount: Math.round(discount), start, end };
     if (!(await writeOffers(offers))) {
-      setStatus('Eroare la salvare. Verifica functia server pentru oferte.', true);
+      setStatus(`Eroare la salvare. Verifica functia server pentru oferte.${getOfferWriteError()}`, true);
       return;
     }
 
