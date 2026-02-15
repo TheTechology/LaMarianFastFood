@@ -549,6 +549,11 @@ function initOfferAdmin() {
     setStatus('Oferta incarcata. Poti modifica procentul sau perioada.');
   };
 
+  const syncOffersBeforeAction = async () => {
+    await refreshOffersFromServer();
+    return readOffers();
+  };
+
   saveBtn.addEventListener('click', async () => {
     const productId = productSelect.value;
     const discount = Number(discountInput.value);
@@ -570,15 +575,17 @@ function initOfferAdmin() {
       return;
     }
 
-    const offers = readOffers();
+    const offers = await syncOffersBeforeAction();
     offers[productId] = { discount: Math.round(discount), start, end };
     if (!(await writeOffers(offers))) {
       setStatus('Eroare la salvare. Verifica functia server pentru oferte.', true);
       return;
     }
 
+    await refreshOffersFromServer();
     renderProductOffers();
     renderOfferList(offerList);
+    fillFormForSelectedProduct();
     setStatus('Oferta a fost salvata si sincronizata.');
   });
 
@@ -589,18 +596,20 @@ function initOfferAdmin() {
       return;
     }
 
-    const offers = readOffers();
+    const offers = await syncOffersBeforeAction();
     delete offers[productId];
     if (!(await writeOffers(offers))) {
       setStatus('Eroare la stergere. Verifica functia server pentru oferte.', true);
       return;
     }
 
+    await refreshOffersFromServer();
     discountInput.value = '';
     startInput.value = '';
     endInput.value = '';
     renderProductOffers();
     renderOfferList(offerList);
+    fillFormForSelectedProduct();
     setStatus('Oferta a fost stearsa.');
   });
 
@@ -618,12 +627,13 @@ function initOfferAdmin() {
     if (!productId) return;
 
     if (deleteRowBtn) {
-      const offers = readOffers();
+      const offers = await syncOffersBeforeAction();
       delete offers[productId];
       if (!(await writeOffers(offers))) {
         setStatus('Eroare la stergere. Verifica functia server pentru oferte.', true);
         return;
       }
+      await refreshOffersFromServer();
       renderProductOffers();
       renderOfferList(offerList);
       fillFormForSelectedProduct();
@@ -653,13 +663,14 @@ function initOfferAdmin() {
       return;
     }
 
-    const offers = readOffers();
+    const offers = await syncOffersBeforeAction();
     offers[productId] = { discount: Math.round(discount), start, end };
     if (!(await writeOffers(offers))) {
       setStatus('Eroare la salvare. Verifica functia server pentru oferte.', true);
       return;
     }
 
+    await refreshOffersFromServer();
     renderProductOffers();
     renderOfferList(offerList);
     fillFormForSelectedProduct();
