@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panou Oferte - La Marian FastFood</title>
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+  <meta name="description" content="Panou intern pentru administrare oferte produse.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div class="topbar">Panou intern oferte produse</div>
+  <header>
+    <nav class="nav container">
+      <a class="brand" href="index.html"><span class="brand-logo-wrap"><img class="brand-logo" src="assets/img/logo-fastfood-crop.png" alt="Logo La Marian FastFood" width="68" height="68"></span><span class="brand-text">La Marian <span>FastFood</span></span></a>
+      <button class="menu-btn" data-menu-toggle aria-expanded="false" aria-label="Meniu">Meniu</button>
+      <div class="nav-links" data-nav-links>
+        <a href="index.html">Acasa</a>
+        <a href="meniu.html">Meniu</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <a class="btn desktop-only admin-mobile-visible" href="admin-oferte.html" aria-current="page">Admin</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section-small">
+      <div class="container" data-admin-gate data-admin-user="admin" data-admin-pass="SchimbaParolaAici2026">
+        <div class="section-title reveal">
+          <p class="section-kicker">Panou privat</p>
+          <h1>Administrare oferte produse</h1>
+          <p>Setezi aici oferta, iar reducerea apare automat public in paginile `index` si `meniu`.</p>
+        </div>
+
+        <section class="card reveal" data-admin-login>
+          <h2>Login admin</h2>
+          <p>Introdu user si parola pentru a modifica ofertele.</p>
+          <form class="offer-admin-grid" data-admin-login-form>
+            <label>
+              User
+              <input class="search" type="text" autocomplete="username" data-admin-username-input placeholder="Ex: admin">
+            </label>
+            <label>
+              Parola
+              <input class="search" type="password" autocomplete="current-password" data-admin-password-input placeholder="Parola admin">
+            </label>
+            <button class="btn" type="submit">Logare</button>
+          </form>
+          <p class="offer-admin-status" data-admin-login-status aria-live="polite"></p>
+        </section>
+
+        <section class="offer-admin card reveal admin-hidden" data-admin-panel aria-label="Administrare oferte produse">
+          <div class="offer-admin-head">
+            <h3>Setari oferta</h3>
+            <p>Alege produsul, procentul si perioada (start/final).</p>
+            <p style="margin-top:10px;"><button class="btn-outline" type="button" data-admin-logout>Delogare</button></p>
+          </div>
+          <div class="offer-admin-grid">
+            <label>
+              Produs
+              <select class="select" data-offer-product aria-label="Produs oferta"></select>
+            </label>
+            <label>
+              Reducere (%)
+              <input class="search" data-offer-discount type="number" min="1" max="95" step="1" placeholder="Ex: 25" aria-label="Procent reducere">
+            </label>
+            <label>
+              Data + ora start
+              <input class="search" data-offer-start type="datetime-local" aria-label="Data ora start">
+            </label>
+            <label>
+              Data + ora final
+              <input class="search" data-offer-end type="datetime-local" aria-label="Data ora final">
+            </label>
+          </div>
+          <div class="offer-admin-actions">
+            <button class="btn" type="button" data-offer-save>Salveaza oferta</button>
+            <button class="btn-outline" type="button" data-offer-delete>Sterge oferta produs</button>
+          </div>
+          <p class="offer-admin-status" data-offer-status aria-live="polite"></p>
+          <div class="offer-admin-list" data-offer-list></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>

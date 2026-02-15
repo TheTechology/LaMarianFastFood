@@ -130,6 +130,542 @@ menuCategory?.addEventListener('change', () => {
 
 filterMenu();
 
+const offerStorageKey = 'lmff-product-offers-v1';
+const productCards = Array.from(d.querySelectorAll('[data-product-id]'));
+const productCatalog = [
+  { id: 'burger-black-angus', name: 'Burger Black Angus', image: 'assets/img/burger-black-angus.png', description: 'Carne suculenta, cheddar maturat si sos burger signature.' },
+  { id: 'double-smash-burger', name: 'Double Smash Burger', image: 'assets/img/double-smash-burger.png', description: 'Doua straturi de carne, ceapa caramelizata si sos burger house.' },
+  { id: 'shaorma-clasica-mare', name: 'Shaorma Clasica Mare', image: 'assets/img/shaorma-clasica-mare.png', description: 'Pui fraged, cartofi aurii, salata fresh si sos de usturoi.' },
+  { id: 'shaorma-crispy', name: 'Shaorma Crispy', image: 'assets/img/shaorma-crispy.png', description: 'Bucati crispy, salata mix, muraturi si sos picant echilibrat.' },
+  { id: 'meniu-crispy-xl', name: 'Meniu Crispy XL', image: 'assets/img/meniu-crispy-xl.png', description: 'Crispy crocant, cartofi aurii, salata coleslaw si sos la alegere.' },
+  { id: 'meniu-strips-hot', name: 'Meniu Strips Hot', image: 'assets/img/meniu-strips-hot.png', description: 'Strips condimentat, cartofi prajiti si dip cremos de usturoi.' },
+  { id: 'doner-box-clasic', name: 'Doner Box Clasic', image: 'assets/img/doner-box-clasic.png', description: 'Portie echilibrata cu carne, cartofi si sosuri bine dozate.' },
+  { id: 'doner-box-picant', name: 'Doner Box Picant', image: 'assets/img/doner-box-picant.png', description: 'Varianta intensa cu ardei iute, sos chili si topping crispy.' },
+  { id: 'ciolan-afumat-cuptor', name: 'Ciolan Afumat la Cuptor', image: 'assets/img/ciolan-cartofi.png', description: 'Ciolan rumenit lent, cartofi wedges si sos rustic de casa.' },
+  { id: 'portie-cartofi-family', name: 'Portie Cartofi Family', image: 'assets/img/portie-cartofi-family.png', description: 'Cartofi crocanti, ideali pentru partajat, cu doua sosuri incluse.' },
+  { id: 'pachet-sosuri-signature', name: 'Pachet Sosuri Signature', image: 'assets/img/pachet-sosuri-signature.png', description: 'Usturoi, burger, barbecue, picant. Combini exact cum preferi.' }
+];
+
+function readOffers() {
+  try {
+    const raw = localStorage.getItem(offerStorageKey);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (err) {
+    return {};
+  }
+}
+
+function writeOffers(offers) {
+  try {
+    localStorage.setItem(offerStorageKey, JSON.stringify(offers));
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+function parseDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date;
+}
+
+function normalizeOffer(offer) {
+  if (!offer || typeof offer !== 'object') return null;
+  const discount = Number(offer.discount);
+  const startDate = parseDate(offer.start);
+  const endDate = parseDate(offer.end);
+  if (!Number.isFinite(discount) || discount < 1 || discount > 95) return null;
+  if (!startDate || !endDate || endDate <= startDate) return null;
+  return {
+    discount: Math.round(discount),
+    start: offer.start,
+    end: offer.end
+  };
+}
+
+function formatDate(value) {
+  const date = parseDate(value);
+  if (!date) return '-';
+  return new Intl.DateTimeFormat('ro-RO', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
+}
+
+function formatCountdown(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const days = Math.floor(total / 86400);
+  const hours = Math.floor((total % 86400) / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+  return `${days}z ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function getProductName(productId) {
+  const found = productCatalog.find((item) => item.id === productId);
+  return found ? found.name : productId;
+}
+
+function getProductData(productId) {
+  const found = productCatalog.find((item) => item.id === productId);
+  return found || null;
+}
+
+function getOrCreateOfferUI(card) {
+  let box = card.querySelector('[data-offer-box]');
+  if (box) return box;
+
+  box = d.createElement('div');
+  box.className = 'product-offer-box';
+  box.setAttribute('data-offer-box', '');
+  box.innerHTML = `
+    <div class="product-offer-top">
+      <span class="product-offer-badge" data-offer-badge></span>
+      <span class="product-offer-state" data-offer-state></span>
+    </div>
+    <p class="product-offer-title" data-offer-title></p>
+    <p class="product-offer-period" data-offer-period></p>
+    <p class="product-offer-countdown"><span class="offer-clock" aria-hidden="true"></span><span data-offer-countdown></span></p>
+  `;
+
+  const callBtn = card.querySelector('.menu-call-btn');
+  if (callBtn) {
+    callBtn.insertAdjacentElement('beforebegin', box);
+  } else {
+    card.appendChild(box);
+  }
+  return box;
+}
+
+function clearOfferUI(card) {
+  const box = card.querySelector('[data-offer-box]');
+  if (box) box.remove();
+}
+
+function renderProductOffers() {
+  if (!productCards.length) return;
+  const offers = readOffers();
+  const now = Date.now();
+
+  productCards.forEach((card) => {
+    const productId = card.getAttribute('data-product-id');
+    if (!productId) return;
+
+    const offer = normalizeOffer(offers[productId]);
+    if (!offer) {
+      clearOfferUI(card);
+      return;
+    }
+
+    const start = parseDate(offer.start);
+    const end = parseDate(offer.end);
+    if (!start || !end) {
+      clearOfferUI(card);
+      return;
+    }
+
+    const startTime = start.getTime();
+    const endTime = end.getTime();
+    const isUpcoming = now < startTime;
+    const isActive = now >= startTime && now < endTime;
+
+    if (!isUpcoming && !isActive) {
+      clearOfferUI(card);
+      return;
+    }
+
+    const box = getOrCreateOfferUI(card);
+    const badge = box.querySelector('[data-offer-badge]');
+    const state = box.querySelector('[data-offer-state]');
+    const title = box.querySelector('[data-offer-title]');
+    const period = box.querySelector('[data-offer-period]');
+    const countdown = box.querySelector('[data-offer-countdown]');
+
+    if (badge) badge.textContent = `-${offer.discount}%`;
+    if (state) state.textContent = isActive ? 'Oferta activa' : 'Oferta programata';
+    if (title) title.textContent = `Reducere aplicata la ${getProductName(productId)}`;
+    if (period) period.textContent = `Perioada: ${formatDate(offer.start)} - ${formatDate(offer.end)}`;
+    if (countdown) {
+      countdown.textContent = isActive
+        ? `Oferta este valabila: ${formatCountdown(endTime - now)}`
+        : `Incepe in: ${formatCountdown(startTime - now)}`;
+    }
+  });
+}
+
+function renderOffersZone() {
+  const offersZone = d.querySelector('[data-offers-zone]');
+  if (!offersZone) return;
+
+  const offers = readOffers();
+  const now = Date.now();
+  const offerItems = Object.entries(offers)
+    .map(([productId, raw]) => {
+      const offer = normalizeOffer(raw);
+      if (!offer) return null;
+      const product = getProductData(productId);
+      if (!product) return null;
+      const start = parseDate(offer.start);
+      const end = parseDate(offer.end);
+      if (!start || !end) return null;
+      const startTime = start.getTime();
+      const endTime = end.getTime();
+      const isUpcoming = now < startTime;
+      const isActive = now >= startTime && now < endTime;
+      if (!isUpcoming && !isActive) return null;
+      return {
+        product,
+        offer,
+        isUpcoming,
+        isActive,
+        startTime,
+        endTime
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.startTime - b.startTime);
+
+  if (!offerItems.length) {
+    offersZone.innerHTML = `
+      <article class="card offer-empty-card">
+        <h3>Momentan nu exista oferte active</h3>
+        <p>Urmareste aceasta zona. Cand apar reduceri, produsele vor fi listate automat cu procent si perioada.</p>
+        <a class="btn-outline" href="meniu.html">Vezi meniul complet</a>
+      </article>
+    `;
+    return;
+  }
+
+  offersZone.innerHTML = `
+    <div class="grid-3 offer-zone-grid">
+      ${offerItems
+        .map((item) => {
+          const remaining = item.isActive ? item.endTime - now : item.startTime - now;
+          const stateLabel = item.isActive ? 'Activa acum' : 'Programata';
+          const countdownLabel = item.isActive ? 'Oferta este valabila' : 'Incepe in';
+          const narrative = item.isActive
+            ? `Economisesti ${item.offer.discount}% daca plasezi comanda in aceasta fereastra de timp.`
+            : 'Oferta este programata. Se va activa automat la data si ora de start.';
+          return `
+            <article class="card offer-zone-card">
+              <div class="offer-zone-media">
+                <img src="${item.product.image}" loading="lazy" width="500" height="380" alt="${item.product.name}">
+                <div class="offer-zone-media-overlay">
+                  <span class="offer-zone-state">${stateLabel}</span>
+                  <span class="product-offer-badge">-${item.offer.discount}%</span>
+                </div>
+              </div>
+              <div class="offer-zone-body">
+                <p class="offer-zone-kicker">Oferta limitata</p>
+                <h3>${item.product.name}</h3>
+                <p class="offer-zone-copy">${item.product.description}</p>
+                <p class="offer-zone-note">${narrative}</p>
+                <p class="offer-zone-period">Perioada: ${formatDate(item.offer.start)} - ${formatDate(item.offer.end)}</p>
+                <p class="offer-zone-countdown"><span class="offer-clock" aria-hidden="true"></span>${countdownLabel}: ${formatCountdown(remaining)}</p>
+                <a class="btn menu-call-btn" href="tel:+40755516039">Comanda telefonic acum</a>
+              </div>
+            </article>
+          `;
+        })
+        .join('')}
+    </div>
+  `;
+}
+
+function renderOfferList(container) {
+  const offers = readOffers();
+  const validOffers = Object.entries(offers)
+    .map(([productId, offer]) => ({ productId, offer: normalizeOffer(offer) }))
+    .filter((item) => item.offer);
+
+  if (!validOffers.length) {
+    container.innerHTML = '<p>Nu exista oferte salvate.</p>';
+    return;
+  }
+
+  container.innerHTML = validOffers
+    .map((item) => {
+      const { productId, offer } = item;
+      return `
+        <article class="offer-list-item" data-offer-item="${productId}">
+          <h4>${getProductName(productId)}</h4>
+          <div class="offer-list-item-grid">
+            <label>
+              Reducere (%)
+              <input class="search" type="number" min="1" max="95" step="1" data-offer-item-discount value="${offer.discount}">
+            </label>
+            <label>
+              Data + ora start
+              <input class="search" type="datetime-local" data-offer-item-start value="${offer.start}">
+            </label>
+            <label>
+              Data + ora final
+              <input class="search" type="datetime-local" data-offer-item-end value="${offer.end}">
+            </label>
+          </div>
+          <p class="offer-list-item-meta">Activ: ${formatDate(offer.start)} - ${formatDate(offer.end)}</p>
+          <div class="offer-list-item-actions">
+            <button class="btn" type="button" data-offer-item-save>Salveaza modificari</button>
+            <button class="btn-outline" type="button" data-offer-item-delete>Sterge oferta</button>
+          </div>
+        </article>
+      `;
+    })
+    .join('');
+}
+
+function initOfferAdmin() {
+  const productSelect = d.querySelector('[data-offer-product]');
+  const discountInput = d.querySelector('[data-offer-discount]');
+  const startInput = d.querySelector('[data-offer-start]');
+  const endInput = d.querySelector('[data-offer-end]');
+  const saveBtn = d.querySelector('[data-offer-save]');
+  const deleteBtn = d.querySelector('[data-offer-delete]');
+  const status = d.querySelector('[data-offer-status]');
+  const offerList = d.querySelector('[data-offer-list]');
+
+  if (!productSelect || !discountInput || !startInput || !endInput || !saveBtn || !deleteBtn || !status || !offerList) {
+    return;
+  }
+
+  productSelect.innerHTML = productCatalog
+    .map((product) => `<option value="${product.id}">${product.name}</option>`)
+    .join('');
+
+  const setStatus = (message, isError = false) => {
+    status.textContent = message;
+    status.classList.toggle('error', isError);
+  };
+
+  const fillFormForSelectedProduct = () => {
+    const productId = productSelect.value;
+    const offers = readOffers();
+    const offer = normalizeOffer(offers[productId]);
+
+    if (!offer) {
+      discountInput.value = '';
+      startInput.value = '';
+      endInput.value = '';
+      setStatus('Produs fara oferta activa/programata.');
+      return;
+    }
+
+    discountInput.value = String(offer.discount);
+    startInput.value = offer.start;
+    endInput.value = offer.end;
+    setStatus('Oferta incarcata. Poti modifica procentul sau perioada.');
+  };
+
+  saveBtn.addEventListener('click', () => {
+    const productId = productSelect.value;
+    const discount = Number(discountInput.value);
+    const start = startInput.value;
+    const end = endInput.value;
+    const startDate = parseDate(start);
+    const endDate = parseDate(end);
+
+    if (!productId) {
+      setStatus('Selecteaza un produs.', true);
+      return;
+    }
+    if (!Number.isFinite(discount) || discount < 1 || discount > 95) {
+      setStatus('Reducerea trebuie sa fie intre 1% si 95%.', true);
+      return;
+    }
+    if (!startDate || !endDate || endDate <= startDate) {
+      setStatus('Perioada este invalida. Verifica data/ora start-final.', true);
+      return;
+    }
+
+    const offers = readOffers();
+    offers[productId] = { discount: Math.round(discount), start, end };
+    if (!writeOffers(offers)) {
+      setStatus('Eroare la salvare in browser.', true);
+      return;
+    }
+
+    renderProductOffers();
+    renderOfferList(offerList);
+    setStatus('Oferta a fost salvata si sincronizata.');
+  });
+
+  deleteBtn.addEventListener('click', () => {
+    const productId = productSelect.value;
+    if (!productId) {
+      setStatus('Selecteaza un produs.', true);
+      return;
+    }
+
+    const offers = readOffers();
+    delete offers[productId];
+    if (!writeOffers(offers)) {
+      setStatus('Eroare la stergere.', true);
+      return;
+    }
+
+    discountInput.value = '';
+    startInput.value = '';
+    endInput.value = '';
+    renderProductOffers();
+    renderOfferList(offerList);
+    setStatus('Oferta a fost stearsa.');
+  });
+
+  offerList.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+
+    const saveRowBtn = target.closest('[data-offer-item-save]');
+    const deleteRowBtn = target.closest('[data-offer-item-delete]');
+    if (!saveRowBtn && !deleteRowBtn) return;
+
+    const row = target.closest('[data-offer-item]');
+    if (!row) return;
+    const productId = row.getAttribute('data-offer-item');
+    if (!productId) return;
+
+    if (deleteRowBtn) {
+      const offers = readOffers();
+      delete offers[productId];
+      if (!writeOffers(offers)) {
+        setStatus('Eroare la stergere.', true);
+        return;
+      }
+      renderProductOffers();
+      renderOfferList(offerList);
+      fillFormForSelectedProduct();
+      setStatus(`Oferta pentru ${getProductName(productId)} a fost stearsa.`);
+      return;
+    }
+
+    const discountInputRow = row.querySelector('[data-offer-item-discount]');
+    const startInputRow = row.querySelector('[data-offer-item-start]');
+    const endInputRow = row.querySelector('[data-offer-item-end]');
+    if (!(discountInputRow instanceof HTMLInputElement) || !(startInputRow instanceof HTMLInputElement) || !(endInputRow instanceof HTMLInputElement)) {
+      return;
+    }
+
+    const discount = Number(discountInputRow.value);
+    const start = startInputRow.value;
+    const end = endInputRow.value;
+    const startDate = parseDate(start);
+    const endDate = parseDate(end);
+
+    if (!Number.isFinite(discount) || discount < 1 || discount > 95) {
+      setStatus('Reducerea trebuie sa fie intre 1% si 95%.', true);
+      return;
+    }
+    if (!startDate || !endDate || endDate <= startDate) {
+      setStatus('Perioada este invalida. Verifica data/ora start-final.', true);
+      return;
+    }
+
+    const offers = readOffers();
+    offers[productId] = { discount: Math.round(discount), start, end };
+    if (!writeOffers(offers)) {
+      setStatus('Eroare la salvare in browser.', true);
+      return;
+    }
+
+    renderProductOffers();
+    renderOfferList(offerList);
+    fillFormForSelectedProduct();
+    setStatus(`Oferta pentru ${getProductName(productId)} a fost actualizata.`);
+  });
+
+  productSelect.addEventListener('change', fillFormForSelectedProduct);
+  fillFormForSelectedProduct();
+  renderOfferList(offerList);
+}
+
+renderProductOffers();
+renderOffersZone();
+function initAdminGate() {
+  const gate = d.querySelector('[data-admin-gate]');
+  if (!gate) return;
+
+  const expectedUser = (gate.getAttribute('data-admin-user') || '').trim();
+  const expectedPass = gate.getAttribute('data-admin-pass') || '';
+  const loginWrap = gate.querySelector('[data-admin-login]');
+  const loginForm = gate.querySelector('[data-admin-login-form]');
+  const userInput = gate.querySelector('[data-admin-username-input]');
+  const passInput = gate.querySelector('[data-admin-password-input]');
+  const loginStatus = gate.querySelector('[data-admin-login-status]');
+  const adminPanel = gate.querySelector('[data-admin-panel]');
+  const logoutBtn = gate.querySelector('[data-admin-logout]');
+
+  if (!expectedUser || !expectedPass || !loginWrap || !loginForm || !userInput || !passInput || !loginStatus || !adminPanel || !logoutBtn) {
+    return;
+  }
+
+  const authKey = 'lmff-admin-auth-ok-v1';
+  const lockPanel = () => {
+    adminPanel.classList.add('admin-hidden');
+    loginWrap.classList.remove('admin-hidden');
+  };
+
+  const unlockPanel = () => {
+    loginWrap.classList.add('admin-hidden');
+    adminPanel.classList.remove('admin-hidden');
+    if (gate.getAttribute('data-admin-init') !== '1') {
+      initOfferAdmin();
+      gate.setAttribute('data-admin-init', '1');
+    }
+  };
+
+  logoutBtn.addEventListener('click', () => {
+    sessionStorage.removeItem(authKey);
+    loginStatus.textContent = 'Te-ai delogat din panoul de administrare.';
+    loginStatus.classList.remove('error');
+    userInput.focus();
+    lockPanel();
+  });
+
+  if (sessionStorage.getItem(authKey) === 'ok') {
+    unlockPanel();
+    return;
+  }
+
+  loginForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const enteredUser = userInput.value.trim();
+    const enteredPass = passInput.value;
+
+    if (enteredUser === expectedUser && enteredPass === expectedPass) {
+      loginStatus.textContent = 'Autentificare reusita.';
+      loginStatus.classList.remove('error');
+      passInput.value = '';
+      userInput.value = '';
+      userInput.blur();
+      passInput.blur();
+      unlockPanel();
+      sessionStorage.setItem(authKey, 'ok');
+      return;
+    }
+
+    loginStatus.textContent = 'User sau parola invalida.';
+    loginStatus.classList.add('error');
+  });
+}
+
+initAdminGate();
+if (!d.querySelector('[data-admin-gate]')) {
+  initOfferAdmin();
+}
+if (productCards.length) {
+  window.setInterval(() => {
+    renderProductOffers();
+    renderOffersZone();
+  }, 1000);
+}
+
 const galleryItems = d.querySelectorAll('[data-lightbox]');
 const lightbox = d.querySelector('[data-lightbox-modal]');
 if (galleryItems.length && lightbox) {
