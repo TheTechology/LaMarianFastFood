@@ -38,7 +38,7 @@ Proiect realizat de Marian Dumitru.
 - `HTML5` - structura paginilor
 - `CSS3` - stilizare, layout responsive, variabile CSS, efecte vizuale
 - `JavaScript (Vanilla)` - functionalitati interactive fara framework
-- fara backend; proiect 100% static
+- backend serverless pentru oferte publice (Netlify Functions + Netlify Blobs)
 
 ## Functionalitati implementate (JavaScript)
 - comutare tema `dark/light` cu persistenta in `localStorage`
@@ -49,6 +49,19 @@ Proiect realizat de Marian Dumitru.
 - banner cookies cu memorare consimtamant
 - efect parallax pe elemente vizuale
 - inserare automata nota legala pentru imaginile de produs
+- sincronizare oferte intre dispozitive prin endpoint serverless (`/.netlify/functions/offers`)
+- afisare automata oferte `programate` sau `active` in functie de data/ora
+
+## Backend oferte (public pe toate device-urile)
+- functie: `netlify/functions/offers.js`
+- stocare centralizata: Netlify Blobs (`offers.json`)
+- endpoint-uri:
+  - `GET /.netlify/functions/offers` pentru citire publica
+  - `PUT /.netlify/functions/offers` pentru actualizare din panoul admin
+- autentificare pentru `PUT` prin variabile de mediu Netlify:
+  - `ADMIN_USER`
+  - `ADMIN_PASS`
+- valorile din `admin-oferte.html` (`data-admin-user`, `data-admin-pass`) trebuie sa fie identice cu `ADMIN_USER` si `ADMIN_PASS`.
 
 ## Design implementat
 Designul urmareste un stil modern, orientat pe conversie:
@@ -100,6 +113,7 @@ Directia cromatica imbina tonuri inchise premium cu accente calde de portocaliu/
 1. Deschide folderul proiectului.
 2. Ruleaza pagina principala prin dublu-click pe `index.html` sau printr-un server local.
 3. Pentru testare completa recomandat: server static local (ex. `python3 -m http.server`).
+4. Pentru sincronizare reala intre device-uri, deploy pe Netlify si seteaza variabilele `ADMIN_USER` si `ADMIN_PASS`.
 
 ## Autor
 Marian Dumitru

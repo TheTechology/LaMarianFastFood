@@ -131,6 +131,10 @@ menuCategory?.addEventListener('change', () => {
 filterMenu();
 
 const offerStorageKey = 'lmff-product-offers-v1';
+const offersApiUrl = '/.netlify/functions/offers';
+let offersCache = {};
+let offersCacheReady = false;
+let adminAuthCache = null;
 const productCards = Array.from(d.querySelectorAll('[data-product-id]'));
 const productCatalog = [
   { id: 'burger-black-angus', name: 'Burger Black Angus', image: 'assets/img/burger-black-angus.png', description: 'Carne suculenta, cheddar maturat si sos burger signature.' },
@@ -146,20 +150,91 @@ const productCatalog = [
   { id: 'pachet-sosuri-signature', name: 'Pachet Sosuri Signature', image: 'assets/img/pachet-sosuri-signature.png', description: 'Usturoi, burger, barbecue, picant. Combini exact cum preferi.' }
 ];
 
-function readOffers() {
+function sanitizeOffersMap(input) {
+  if (!input || typeof input !== 'object') return {};
+  const out = {};
+  Object.entries(input).forEach(([productId, offer]) => {
+    const normalized = normalizeOffer(offer);
+    if (normalized) out[productId] = normalized;
+  });
+  return out;
+}
+
+function readOffersFromLocalStorage() {
   try {
     const raw = localStorage.getItem(offerStorageKey);
     if (!raw) return {};
     const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : {};
+    return sanitizeOffersMap(parsed);
   } catch (err) {
     return {};
   }
 }
 
-function writeOffers(offers) {
+function saveOffersToLocalStorage(offers) {
   try {
     localStorage.setItem(offerStorageKey, JSON.stringify(offers));
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+function getAdminAuth() {
+  if (adminAuthCache && adminAuthCache.user && adminAuthCache.pass) return adminAuthCache;
+  const gate = d.querySelector('[data-admin-gate]');
+  if (!gate) return null;
+  const user = (gate.getAttribute('data-admin-user') || '').trim();
+  const pass = gate.getAttribute('data-admin-pass') || '';
+  if (!user || !pass) return null;
+  adminAuthCache = { user, pass };
+  return adminAuthCache;
+}
+
+function readOffers() {
+  if (offersCacheReady) return { ...offersCache };
+  offersCache = readOffersFromLocalStorage();
+  offersCacheReady = true;
+  return { ...offersCache };
+}
+
+async function refreshOffersFromServer() {
+  try {
+    const response = await fetch(offersApiUrl, {
+      method: 'GET',
+      headers: { Accept: 'application/json' }
+    });
+    if (!response.ok) return false;
+    const parsed = await response.json();
+    const remoteOffers = sanitizeOffersMap(parsed);
+    offersCache = remoteOffers;
+    offersCacheReady = true;
+    saveOffersToLocalStorage(remoteOffers);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+async function writeOffers(offers) {
+  const normalized = sanitizeOffersMap(offers);
+  const auth = getAdminAuth();
+  if (!auth) return false;
+
+  try {
+    const response = await fetch(offersApiUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-User': auth.user,
+        'X-Admin-Pass': auth.pass
+      },
+      body: JSON.stringify(normalized)
+    });
+    if (!response.ok) return false;
+    offersCache = normalized;
+    offersCacheReady = true;
+    saveOffersToLocalStorage(normalized);
     return true;
   } catch (err) {
     return false;
@@ -474,7 +549,7 @@ function initOfferAdmin() {
     setStatus('Oferta incarcata. Poti modifica procentul sau perioada.');
   };
 
-  saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', async () => {
     const productId = productSelect.value;
     const discount = Number(discountInput.value);
     const start = startInput.value;
@@ -497,8 +572,8 @@ function initOfferAdmin() {
 
     const offers = readOffers();
     offers[productId] = { discount: Math.round(discount), start, end };
-    if (!writeOffers(offers)) {
-      setStatus('Eroare la salvare in browser.', true);
+    if (!(await writeOffers(offers))) {
+      setStatus('Eroare la salvare. Verifica functia server pentru oferte.', true);
       return;
     }
 
@@ -507,7 +582,7 @@ function initOfferAdmin() {
     setStatus('Oferta a fost salvata si sincronizata.');
   });
 
-  deleteBtn.addEventListener('click', () => {
+  deleteBtn.addEventListener('click', async () => {
     const productId = productSelect.value;
     if (!productId) {
       setStatus('Selecteaza un produs.', true);
@@ -516,8 +591,8 @@ function initOfferAdmin() {
 
     const offers = readOffers();
     delete offers[productId];
-    if (!writeOffers(offers)) {
-      setStatus('Eroare la stergere.', true);
+    if (!(await writeOffers(offers))) {
+      setStatus('Eroare la stergere. Verifica functia server pentru oferte.', true);
       return;
     }
 
@@ -529,7 +604,7 @@ function initOfferAdmin() {
     setStatus('Oferta a fost stearsa.');
   });
 
-  offerList.addEventListener('click', (event) => {
+  offerList.addEventListener('click', async (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
 
@@ -545,8 +620,8 @@ function initOfferAdmin() {
     if (deleteRowBtn) {
       const offers = readOffers();
       delete offers[productId];
-      if (!writeOffers(offers)) {
-        setStatus('Eroare la stergere.', true);
+      if (!(await writeOffers(offers))) {
+        setStatus('Eroare la stergere. Verifica functia server pentru oferte.', true);
         return;
       }
       renderProductOffers();
@@ -580,8 +655,8 @@ function initOfferAdmin() {
 
     const offers = readOffers();
     offers[productId] = { discount: Math.round(discount), start, end };
-    if (!writeOffers(offers)) {
-      setStatus('Eroare la salvare in browser.', true);
+    if (!(await writeOffers(offers))) {
+      setStatus('Eroare la salvare. Verifica functia server pentru oferte.', true);
       return;
     }
 
@@ -594,10 +669,28 @@ function initOfferAdmin() {
   productSelect.addEventListener('change', fillFormForSelectedProduct);
   fillFormForSelectedProduct();
   renderOfferList(offerList);
+  refreshOffersFromServer().then((synced) => {
+    if (!synced) return;
+    renderOfferList(offerList);
+    fillFormForSelectedProduct();
+  });
 }
 
 renderProductOffers();
 renderOffersZone();
+
+async function bootstrapOffers() {
+  const synced = await refreshOffersFromServer();
+  if (!synced && !offersCacheReady) {
+    offersCache = readOffersFromLocalStorage();
+    offersCacheReady = true;
+  }
+  renderProductOffers();
+  renderOffersZone();
+}
+
+bootstrapOffers();
+
 function initAdminGate() {
   const gate = d.querySelector('[data-admin-gate]');
   if (!gate) return;
@@ -623,6 +716,7 @@ function initAdminGate() {
   };
 
   const unlockPanel = () => {
+    adminAuthCache = { user: expectedUser, pass: expectedPass };
     loginWrap.classList.add('admin-hidden');
     adminPanel.classList.remove('admin-hidden');
     if (gate.getAttribute('data-admin-init') !== '1') {
@@ -633,6 +727,7 @@ function initAdminGate() {
 
   logoutBtn.addEventListener('click', () => {
     sessionStorage.removeItem(authKey);
+    adminAuthCache = null;
     loginStatus.textContent = 'Te-ai delogat din panoul de administrare.';
     loginStatus.classList.remove('error');
     userInput.focus();
@@ -675,6 +770,13 @@ if (productCards.length) {
     renderProductOffers();
     renderOffersZone();
   }, 1000);
+  window.setInterval(() => {
+    refreshOffersFromServer().then((synced) => {
+      if (!synced) return;
+      renderProductOffers();
+      renderOffersZone();
+    });
+  }, 30000);
 }
 
 const galleryItems = d.querySelectorAll('[data-lightbox]');
