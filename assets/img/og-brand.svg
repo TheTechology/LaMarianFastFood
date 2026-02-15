@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111620"/>
+      <stop offset="1" stop-color="#2a1110"/>
+    </linearGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff5a1f"/>
+      <stop offset="1" stop-color="#ff3d2e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1020" cy="120" r="220" fill="#ff5a1f" opacity="0.18"/>
+  <circle cx="140" cy="590" r="250" fill="#ff3d2e" opacity="0.14"/>
+  <rect x="90" y="100" width="240" height="10" rx="5" fill="url(#acc)"/>
+  <text x="90" y="250" fill="#ffffff" font-family="Sora, Arial, sans-serif" font-size="74" font-weight="800">La Marian</text>
+  <text x="90" y="330" fill="#ffd7c8" font-family="Sora, Arial, sans-serif" font-size="64" font-weight="700">FastFood Adjud</text>
+  <text x="90" y="410" fill="#e8edf7" font-family="Sora, Arial, sans-serif" font-size="34" font-weight="600">Shaorma • Burger • Doner • Crispy</text>
+  <text x="90" y="480" fill="#ffb99d" font-family="Sora, Arial, sans-serif" font-size="30" font-weight="700">Comenzi: +40 755 516 039</text>
+</svg>
