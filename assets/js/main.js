@@ -487,7 +487,15 @@ function renderOffersZone() {
                 <p class="offer-zone-copy">${item.product.description}</p>
                 <p class="offer-zone-note">${narrative}</p>
                 <p class="offer-zone-period">Perioada: ${formatDate(item.offer.start)} - ${formatDate(item.offer.end)}</p>
-                <p class="offer-zone-countdown"><span class="offer-clock" aria-hidden="true"></span>${countdownLabel}: ${formatCountdown(remaining)}</p>
+                <p class="offer-zone-countdown">
+                  <span class="offer-clock" aria-hidden="true"></span>
+                  <span
+                    data-offer-zone-countdown
+                    data-offer-zone-start="${item.startTime}"
+                    data-offer-zone-end="${item.endTime}"
+                    data-offer-zone-active="${item.isActive ? '1' : '0'}"
+                  >${countdownLabel}: ${formatCountdown(remaining)}</span>
+                </p>
                 <a class="btn menu-call-btn" href="tel:+40755516039">${item.isActive ? 'Prinde oferta acum' : 'Seteaza comanda telefonic'}</a>
               </div>
             </article>
@@ -496,6 +504,23 @@ function renderOffersZone() {
         .join('')}
     </div>
   `;
+}
+
+function updateOffersZoneCountdowns() {
+  const countdownNodes = d.querySelectorAll('[data-offer-zone-countdown]');
+  if (!countdownNodes.length) return;
+  const now = Date.now();
+
+  countdownNodes.forEach((node) => {
+    const startTime = Number(node.getAttribute('data-offer-zone-start'));
+    const endTime = Number(node.getAttribute('data-offer-zone-end'));
+    const isActive = node.getAttribute('data-offer-zone-active') === '1';
+    if (!Number.isFinite(startTime) || !Number.isFinite(endTime)) return;
+
+    const remaining = isActive ? endTime - now : startTime - now;
+    const label = isActive ? 'Expira in' : 'Porneste in';
+    node.textContent = `${label}: ${formatCountdown(remaining)}`;
+  });
 }
 
 function renderOfferList(container) {
@@ -722,6 +747,7 @@ function initOfferAdmin() {
 
 renderProductOffers();
 renderOffersZone();
+updateOffersZoneCountdowns();
 
 async function bootstrapOffers() {
   const synced = await refreshOffersFromServer();
@@ -731,6 +757,7 @@ async function bootstrapOffers() {
   }
   renderProductOffers();
   renderOffersZone();
+  updateOffersZoneCountdowns();
 }
 
 bootstrapOffers();
@@ -812,12 +839,14 @@ if (!d.querySelector('[data-admin-gate]')) {
 if (productCards.length) {
   window.setInterval(() => {
     renderProductOffers();
+    updateOffersZoneCountdowns();
   }, 1000);
   window.setInterval(() => {
     refreshOffersFromServer().then((synced) => {
       if (!synced) return;
       renderProductOffers();
       renderOffersZone();
+      updateOffersZoneCountdowns();
     });
   }, 30000);
 }
