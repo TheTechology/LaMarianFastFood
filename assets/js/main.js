@@ -336,7 +336,11 @@ function getOrCreateOfferUI(card) {
     </div>
     <p class="product-offer-title" data-offer-title></p>
     <p class="product-offer-period" data-offer-period></p>
-    <p class="product-offer-countdown"><span class="offer-clock" aria-hidden="true"></span><span data-offer-countdown></span></p>
+    <p class="product-offer-countdown">
+      <span class="offer-clock" aria-hidden="true"></span>
+      <span class="offer-count-label" data-offer-count-label></span>
+      <strong class="offer-count-value" data-offer-countdown></strong>
+    </p>
   `;
 
   const callBtn = card.querySelector('.menu-call-btn');
@@ -395,6 +399,7 @@ function renderProductOffers() {
     const state = box.querySelector('[data-offer-state]');
     const title = box.querySelector('[data-offer-title]');
     const period = box.querySelector('[data-offer-period]');
+    const countdownLabel = box.querySelector('[data-offer-count-label]');
     const countdown = box.querySelector('[data-offer-countdown]');
 
     if (badge) badge.textContent = `-${offer.discount}%`;
@@ -405,10 +410,11 @@ function renderProductOffers() {
         : `Planifica pentru ${getProductName(productId)} si prinde reducerea din start.`;
     }
     if (period) period.textContent = `Perioada: ${formatDate(offer.start)} - ${formatDate(offer.end)}`;
+    if (countdownLabel) countdownLabel.textContent = isActive ? 'Expira in:' : 'Porneste in:';
     if (countdown) {
       countdown.textContent = isActive
-        ? `Expira in: ${formatCountdown(endTime - now)}`
-        : `Porneste in: ${formatCountdown(startTime - now)}`;
+        ? formatCountdown(endTime - now)
+        : formatCountdown(startTime - now);
     }
     card.classList.add(isActive ? 'offer-active' : 'offer-upcoming');
     card.setAttribute('data-offer-state', isActive ? 'active' : 'upcoming');

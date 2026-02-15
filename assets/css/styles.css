@@ -1207,15 +1207,15 @@ html[data-theme="light"] .offer-zone-card.is-upcoming .offer-zone-hint {
 .product-offer-box {
   margin-top: 14px;
   margin-bottom: 6px;
-  border: 1px solid rgba(255, 140, 101, 0.5);
+  border: 1px solid rgba(255, 141, 103, 0.4);
   border-radius: 16px;
   padding: 13px 14px;
   background:
-    linear-gradient(150deg, rgba(255, 92, 35, 0.2), rgba(255, 153, 111, 0.09)),
-    rgba(20, 28, 41, 0.75);
+    linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
+    rgba(16, 23, 35, 0.88);
   box-shadow:
-    0 12px 24px rgba(0, 0, 0, 0.22),
-    0 0 16px rgba(255, 104, 56, 0.2);
+    0 16px 32px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .product-offer-top {
@@ -1231,9 +1231,9 @@ html[data-theme="light"] .offer-zone-card.is-upcoming .offer-zone-hint {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  min-width: 94px;
-  padding: 8px 14px;
-  font-size: 1.08rem;
+  min-width: 99px;
+  padding: 8px 15px;
+  font-size: 1.13rem;
   line-height: 1;
   font-weight: 800;
   letter-spacing: 0.01em;
@@ -1274,20 +1274,30 @@ html[data-theme="light"] .offer-zone-card.is-upcoming .offer-zone-hint {
   font-weight: 700;
 }
 
+.offer-count-label {
+  color: #ffe7df;
+  font-weight: 700;
+}
+
+.offer-count-value {
+  color: #fff;
+  font-weight: 800;
+}
+
 .menu-item.has-offer {
-  border-color: rgba(255, 144, 106, 0.44);
+  border-color: rgba(255, 153, 113, 0.54);
   box-shadow:
-    0 18px 30px rgba(0, 0, 0, 0.22),
-    0 0 20px rgba(255, 108, 63, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 20px 38px rgba(0, 0, 0, 0.26),
+    0 0 24px rgba(255, 110, 63, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .menu-item.offer-upcoming {
   border-color: rgba(133, 172, 219, 0.42);
   box-shadow:
-    0 16px 28px rgba(0, 0, 0, 0.2),
-    0 0 18px rgba(105, 157, 221, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 16px 30px rgba(0, 0, 0, 0.22),
+    0 0 20px rgba(95, 155, 225, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .menu-item.offer-upcoming .product-offer-state {
@@ -1349,17 +1359,17 @@ html[data-theme="light"] .offer-list-item {
 }
 
 html[data-theme="light"] .product-offer-box {
-  border-color: rgba(230, 110, 72, 0.42);
+  border-color: #edc2b1;
   background:
-    linear-gradient(140deg, rgba(255, 176, 145, 0.2), rgba(255, 255, 255, 0.9)),
-    rgba(255, 255, 255, 0.76);
+    linear-gradient(155deg, rgba(255, 255, 255, 0.98), rgba(243, 248, 255, 0.95)),
+    rgba(255, 255, 255, 0.84);
 }
 
 html[data-theme="light"] .menu-item.has-offer {
-  border-color: rgba(221, 142, 113, 0.56);
+  border-color: #e7ad96;
   box-shadow:
-    0 14px 24px rgba(24, 40, 63, 0.13),
-    0 0 18px rgba(232, 147, 117, 0.14),
+    0 16px 30px rgba(18, 34, 56, 0.14),
+    0 0 22px rgba(255, 118, 72, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
@@ -1375,6 +1385,14 @@ html[data-theme="light"] .menu-item.offer-upcoming .product-offer-state {
   color: #355678;
   border-color: #bfd3ec;
   background: rgba(225, 236, 250, 0.95);
+}
+
+html[data-theme="light"] .offer-count-label {
+  color: #5b6f88;
+}
+
+html[data-theme="light"] .offer-count-value {
+  color: #223b59;
 }
 
 html[data-theme="light"] .product-offer-state,
