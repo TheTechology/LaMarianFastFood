@@ -1,122 +1,127 @@
-# La Marian Fast Food - Site web de prezentare
+# La Marian FastFood - Website de prezentare + sistem oferte centralizat
 
-Proiect realizat de Marian Dumitru.
+Proiect realizat de Marian Dumitru pentru prezentare brand, comenzi rapide si administrare oferte sincronizate pe toate dispozitivele.
 
-## Descriere generala
-`La Marian Fast Food` este un website static, optimizat pentru prezentarea unui fast-food local din Adjud. Platforma pune accent pe informare rapida, accesibilitate, contact direct (telefon/WhatsApp), vizibilitate in cautari locale si experienta consistenta pe mobil si desktop.
+## 1. Obiectiv proiect
+- prezentare profesionala a meniului (burger, shaorma, doner, crispy, portii)
+- conversie rapida catre comanda telefonica/WhatsApp
+- experienta premium pe mobil, tableta si desktop
+- sistem de oferte administrabil din panou intern, cu afisare publica automata
 
-## Scopul proiectului
-- prezentarea brandului si a produselor principale (burger, shaorma, doner)
-- facilitarea conversiei rapide catre comanda telefonica
-- oferirea informatiilor esentiale: locatie, program, meniu, FAQ, politici
-- consolidarea prezentei online locale prin SEO tehnic on-page
+## 2. Tehnologii folosite
+- `HTML5` - pagini si structura semantica
+- `CSS3` - design premium, responsive, dark/light theme
+- `JavaScript (Vanilla)` - logica UI, filtre, countdown, admin
+- `Netlify Functions (Node.js)` - API serverless pentru oferte
+- `Netlify Blobs` - stocare centralizata oferte (cross-device)
+- `Git + GitHub` - versionare si colaborare
+- `Netlify` - hosting + deployment production
 
-## Ce s-a realizat
-- website multipagina complet:
-  - `index.html` (home)
-  - `meniu.html`
-  - `retetar.html`
-  - `galerie.html`
-  - `despre.html`
-  - `faq.html`
-  - `contact.html`
-  - pagini informative/legale: `termeni.html`, `confidentialitate.html`, `cookies.html`, `declaratie-nutritionala.html`
-  - pagini SEO dedicate: `burger-adjud.html`, `shaorma-adjud.html`, `doner-adjud.html`, `fast-food-adjud-vrancea.html`
-- integrare elemente SEO:
-  - meta title/description/keywords
-  - Open Graph + Twitter Card
-  - date structurate JSON-LD (`Restaurant`, `LocalBusiness`, `FastFoodRestaurant`)
-  - `robots.txt` si `sitemap.xml`
-  - `canonical` + `manifest.webmanifest`
-- optimizare UX:
-  - navigatie responsive cu meniu mobil
-  - apel rapid (`tel:`) si contact WhatsApp
-  - carduri produse + call-to-action-uri clare
-  - sectiuni de incredere (program, timpi, locatie)
+## 3. Structura proiectului
+- `index.html` - homepage cu hero, oferte, produse vedeta, contacte
+- `meniu.html` - meniu complet + zona de oferte in partea de sus
+- `admin-oferte.html` - panou intern login + management oferte
+- `assets/css/styles.css` - stiluri globale, responsive, componente premium
+- `assets/js/main.js` - functionalitate frontend + integrare API oferte
+- `netlify/functions/offers.js` - endpoint `GET/PUT` pentru oferte
+- `netlify.toml` - configurare functions directory
+- `package.json` - dependinte serverless (`@netlify/blobs`)
 
-## Limbaje si tehnologii folosite
-- `HTML5` - structura paginilor
-- `CSS3` - stilizare, layout responsive, variabile CSS, efecte vizuale
-- `JavaScript (Vanilla)` - functionalitati interactive fara framework
-- backend serverless pentru oferte publice (Netlify Functions + Netlify Blobs)
+## 4. Functionalitati principale implementate
+- meniu mobil responsive
+- dark/light mode cu persistenta
+- filtrare + cautare produse in meniu
+- reveal animations si parallax
+- banner cookies
+- galerie lightbox
+- CTA-uri telefon/WhatsApp/harta
+- SEO on-page (meta, OG, JSON-LD, sitemap, robots)
 
-## Functionalitati implementate (JavaScript)
-- comutare tema `dark/light` cu persistenta in `localStorage`
-- meniu mobil cu `aria-expanded`
-- animatii de tip reveal la scroll (`IntersectionObserver`)
-- filtrare meniu dupa categorie + cautare text
-- galerie cu lightbox si inchidere la `Escape`
-- banner cookies cu memorare consimtamant
-- efect parallax pe elemente vizuale
-- inserare automata nota legala pentru imaginile de produs
-- sincronizare oferte intre dispozitive prin endpoint serverless (`/.netlify/functions/offers`)
-- afisare automata oferte `programate` sau `active` in functie de data/ora
+## 5. Sistemul de oferte (implementare tehnica)
 
-## Backend oferte (public pe toate device-urile)
-- functie: `netlify/functions/offers.js`
-- stocare centralizata: Netlify Blobs (`offers.json`)
-- endpoint-uri:
-  - `GET /.netlify/functions/offers` pentru citire publica
-  - `PUT /.netlify/functions/offers` pentru actualizare din panoul admin
-- autentificare pentru `PUT` prin variabile de mediu Netlify:
+### 5.1 Backend API
+- endpoint public citire: `GET /.netlify/functions/offers`
+- endpoint admin update: `PUT /.netlify/functions/offers`
+- fisier: `netlify/functions/offers.js`
+- stocare: Netlify Blobs (`offers.json`)
+
+### 5.2 Validare date oferta
+- `discount` intre `1` si `95`
+- `start` si `end` valide
+- `end` strict mai mare decat `start`
+- sanitizare map oferte inainte de persistare
+
+### 5.3 Autentificare admin
+- `PUT` autorizat prin headere:
+  - `X-Admin-User`
+  - `X-Admin-Pass`
+- creditele sunt verificate fata de variabilele de mediu:
   - `ADMIN_USER`
   - `ADMIN_PASS`
-- pentru Netlify Blobs (daca runtime-ul nu injecteaza automat contextul):
-  - `BLOBS_SITE_ID`
-  - `BLOBS_TOKEN`
-- valorile din `admin-oferte.html` (`data-admin-user`, `data-admin-pass`) trebuie sa fie identice cu `ADMIN_USER` si `ADMIN_PASS`.
 
-## Design implementat
-Designul urmareste un stil modern, orientat pe conversie:
-- layout pe grid-uri si carduri pentru citire rapida
-- header sticky pentru acces permanent la navigatie
-- CTA-uri vizibile pentru comanda imediata
-- tipografie combinata:
-  - `Sora` pentru titluri si elemente de brand
-  - `Manrope` pentru text si lizibilitate
-- accent pe ierarhie vizuala (headline puternic, badge-uri, etichete, sectiuni clar delimitate)
+### 5.4 Sincronizare cross-device
+- ofertele sunt citite de pe server la incarcare
+- refresh periodic server-side pentru continut actual
+- afisare in:
+  - `index.html` (zona Oferte actuale)
+  - `meniu.html` (zona Oferte in partea superioara)
+  - carduri de produs (`data-product-id`) cu badge/stare oferta
 
-## Cromatica
-Sistemul vizual foloseste variabile CSS centralizate in `:root`, cu suport dual-theme:
+## 6. Panoul de administrare (`admin-oferte.html`)
+- login intern cu user/parola
+- selectare produs din catalog
+- setare reducere + data/ora start + data/ora final
+- salvare, modificare, stergere oferta
+- lista oferte existente cu editare in-line
+- status UI pentru succes/eroare
 
-- Tema Dark (implicita):
-  - fundal: `#0e1116`
-  - fundal secundar: `#171b23`
-  - card: `#1f2530`
-  - text principal: `#f6f7fb`
-  - text secundar: `#b6bdcc`
-  - accent principal: `#ff5a1f`
-  - accent secundar: `#ff8744`
-  - accent de contrast: `#ff3d2e`
+## 7. UX/UI oferte (premium marketing)
+- carduri promo cu:
+  - stare: `Activa acum` / `Programata`
+  - badge reducere accentuat (`-XX%`)
+  - perioada evidentiata
+  - countdown live (`Expira in` / `Porneste in`)
+  - mesaj „Valabila in limita stocului disponibil”
+  - CTA orientat pe conversie
+- empty-state premium pentru campanii inactive
+- copy reformulat in ton profesional de vanzare
+- design coerent in ambele teme (dark/light)
 
-- Tema Light:
-  - fundal: `#f6f8fc`
-  - fundal/card: `#ffffff`
-  - text principal: `#2d3c51`
-  - text secundar: `#5a6a7f`
-  - separatoare: `#d7deea`
+## 8. Responsive (mobil/tableta/desktop)
+- desktop: grid ofertare 3 coloane
+- tableta: 2 coloane
+- mobil: 1 coloana
+- ajustari dedicate pentru:
+  - dimensiune badge
+  - lizibilitate countdown
+  - evitarea cliparii imaginilor
+  - stabilitate vizuala (fara flicker)
 
-Directia cromatica imbina tonuri inchise premium cu accente calde de portocaliu/rosu pentru energie vizuala si evidentierea actiunilor importante.
+## 9. Configurare Netlify (obligatoriu pentru oferte)
+Seteaza variabilele in Netlify:
+- `BLOBS_SITE_ID`
+- `BLOBS_TOKEN`
+- `ADMIN_USER`
+- `ADMIN_PASS`
 
-## Accesibilitate si bune practici
-- structurare semantica HTML
-- `alt` pe imagini
-- link de skip (`Sari la continut`)
-- etichete `aria` pentru controale interactive
-- contrast bun intre fundal si text in ambele teme
+Observatie:
+- fara variabilele BLOBS, API-ul de oferte returneaza eroare de configurare.
 
-## Structura proiectului
-- `assets/css/styles.css` - stiluri globale, teme, responsive
-- `assets/js/main.js` - logica interactiva
-- `assets/img/` - imagini optimizate pentru produs si brand
-- `Imagini_Produs/` - surse imagine suplimentare
-- pagini `.html` in radacina proiectului
+## 10. Deploy
+- repository: `https://github.com/TheTechology/LaMarianFastFood`
+- deploy production pe Netlify
+- URL productie: `https://shaoramadjud.netlify.app`
 
-## Rulare locala
-1. Deschide folderul proiectului.
-2. Ruleaza pagina principala prin dublu-click pe `index.html` sau printr-un server local.
-3. Pentru testare completa recomandat: server static local (ex. `python3 -m http.server`).
-4. Pentru sincronizare reala intre device-uri, deploy pe Netlify si seteaza variabilele `ADMIN_USER` si `ADMIN_PASS`.
+## 11. Rulare locala
+1. Clone repo
+2. Ruleaza local static (ex: `python3 -m http.server`)
+3. Pentru functionalitate completa oferte cross-device, foloseste deploy Netlify cu variabilele setate.
+
+## 12. Beneficii rezultate
+- administrare simpla a promotiilor fara editare manuala in pagini
+- afisare automata si sincronizata pe toate dispozitivele
+- prezentare premium, orientata pe conversie
+- baza tehnica scalabila pentru campanii viitoare
 
 ## Autor
 Marian Dumitru

@@ -926,6 +926,26 @@ html[data-theme="light"] .hero-info-card {
   margin-bottom: 22px;
 }
 
+.offers-proof-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.offers-proof-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  border: 1px solid rgba(255, 178, 146, 0.42);
+  color: #ffddd0;
+  background: rgba(255, 107, 60, 0.12);
+}
+
 .offers-zone {
   margin-top: 10px;
   position: relative;
@@ -948,6 +968,46 @@ html[data-theme="light"] .hero-info-card {
 .offer-empty-card p {
   margin: 0 auto 14px;
   max-width: 62ch;
+}
+
+.offer-empty-premium {
+  border-style: solid;
+  border-color: rgba(255, 163, 128, 0.34);
+  border-radius: 18px;
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    radial-gradient(120% 100% at 100% 0%, rgba(255, 130, 86, 0.16), transparent 70%),
+    rgba(20, 28, 42, 0.72);
+}
+
+.offer-empty-kicker {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  font-size: 0.72rem;
+  color: #ffc3ad;
+}
+
+.offer-empty-points {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto 16px;
+  max-width: 680px;
+}
+
+.offer-empty-points span {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255, 186, 160, 0.34);
+  border-radius: 999px;
+  padding: 6px 11px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffe9df;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .offer-zone-grid {
@@ -1210,9 +1270,25 @@ html[data-theme="light"] .offer-empty-card {
     rgba(255, 255, 255, 0.82);
 }
 
+html[data-theme="light"] .offers-proof-pill {
+  color: #904228;
+  border-color: #efc0ae;
+  background: rgba(255, 168, 132, 0.22);
+}
+
 html[data-theme="light"] .offer-empty-card h3,
 html[data-theme="light"] .offer-zone-card h3 {
   color: #253a56;
+}
+
+html[data-theme="light"] .offer-empty-kicker {
+  color: #9a4024;
+}
+
+html[data-theme="light"] .offer-empty-points span {
+  color: #5f7189;
+  border-color: #d8e1ee;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 html[data-theme="light"] .offer-empty-card p,
@@ -3489,6 +3565,15 @@ html[data-theme="light"] .footer-links a:hover {
     margin-bottom: 16px;
   }
 
+  .offers-proof-row {
+    gap: 6px;
+  }
+
+  .offers-proof-pill {
+    font-size: 0.7rem;
+    padding: 5px 9px;
+  }
+
   .offer-zone-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
@@ -3515,6 +3600,16 @@ html[data-theme="light"] .footer-links a:hover {
 
   .offer-empty-card {
     padding: 24px 14px;
+  }
+
+  .offer-empty-points {
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .offer-empty-points span {
+    font-size: 0.7rem;
+    padding: 5px 9px;
   }
 
   .menu-item p {
@@ -3872,6 +3967,10 @@ html[data-theme="light"] .theme-toggle {
 
   .offer-empty-card h3 {
     font-size: 1.55rem;
+  }
+
+  .offer-empty-kicker {
+    font-size: 0.68rem;
   }
 
   .offer-zone-card {

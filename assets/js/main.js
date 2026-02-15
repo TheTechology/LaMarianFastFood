@@ -406,8 +406,8 @@ function renderProductOffers() {
     if (state) state.textContent = isActive ? 'Activa acum' : 'Se activeaza curand';
     if (title) {
       title.textContent = isActive
-        ? `Comanda acum ${getProductName(productId)} la un pret mai bun.`
-        : `Planifica pentru ${getProductName(productId)} si prinde reducerea din start.`;
+        ? `Comanda ${getProductName(productId)} acum si profita de reducerea activa.`
+        : `Planifica pentru ${getProductName(productId)} si fii primul care prinde promotia.`;
     }
     if (period) period.textContent = `Perioada: ${formatDate(offer.start)} - ${formatDate(offer.end)}`;
     if (countdownLabel) countdownLabel.textContent = isActive ? 'Expira in:' : 'Porneste in:';
@@ -455,10 +455,16 @@ function renderOffersZone() {
 
   if (!offerItems.length) {
     offersZone.innerHTML = `
-      <article class="card offer-empty-card">
-        <h3>Pregatim urmatoarele promotii</h3>
-        <p>Revino curand. Ofertele active si programate apar automat aici cu interval clar si countdown in timp real.</p>
-        <a class="btn-outline" href="meniu.html">Vezi meniul complet</a>
+      <article class="card offer-empty-card offer-empty-premium">
+        <p class="offer-empty-kicker">Status campanii</p>
+        <h3>Urmatoarea reducere este aproape de lansare</h3>
+        <p>Pregatim urmatorul val de promotii. Imediat ce o campanie devine activa sau programata, o vezi aici fara sa cauti in tot meniul.</p>
+        <div class="offer-empty-points">
+          <span>Countdown live</span>
+          <span>Interval clar de valabilitate</span>
+          <span>Conditii transparente de promotie</span>
+        </div>
+        <a class="btn-outline" href="meniu.html">Vezi produsele din meniu</a>
       </article>
     `;
     return;
@@ -472,8 +478,8 @@ function renderOffersZone() {
           const stateLabel = item.isActive ? 'Activa acum' : 'Programata';
           const countdownLabel = item.isActive ? 'Expira in' : 'Porneste in';
           const narrative = item.isActive
-            ? `Economisesti ${item.offer.discount}% acum si ridici rapid comanda din locatie, fara pasi suplimentari.`
-            : `Oferta este deja setata. Se activeaza automat si iti aduce ${item.offer.discount}% reducere in intervalul anuntat.`;
+            ? `Ai ${item.offer.discount}% reducere chiar acum, cu comanda simpla si ridicare rapida din locatie.`
+            : `Oferta este programata si iti aduce ${item.offer.discount}% reducere imediat ce incepe intervalul.`;
           const cardStateClass = item.isActive ? 'is-active' : 'is-upcoming';
           return `
             <article class="card offer-zone-card ${cardStateClass}">
@@ -487,7 +493,7 @@ function renderOffersZone() {
               <div class="offer-zone-body">
                 <div class="offer-zone-headline">
                   <p class="offer-zone-kicker">Oferta limitata in timp</p>
-                  <span class="offer-zone-hint">${item.isActive ? 'Comanda acum' : 'Pregateste comanda'}</span>
+                  <span class="offer-zone-hint">${item.isActive ? 'Prinde reducerea' : 'Pregateste-te din timp'}</span>
                 </div>
                 <h3>${item.product.name}</h3>
                 <p class="offer-zone-copy">${item.product.description}</p>
@@ -508,7 +514,7 @@ function renderOffersZone() {
                     class="offer-zone-countdown-value"
                   >${formatCountdown(remaining)}</span>
                 </p>
-                <a class="btn menu-call-btn" href="tel:+40755516039">${item.isActive ? 'Prinde oferta acum' : 'Seteaza comanda telefonic'}</a>
+                <a class="btn menu-call-btn" href="tel:+40755516039">${item.isActive ? 'Comanda cu reducere acum' : 'Rezerva telefonic oferta'}</a>
               </div>
             </article>
           `;
