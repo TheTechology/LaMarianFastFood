@@ -58,7 +58,7 @@ function createStore() {
     '';
 
   if (siteID && token) {
-    return getStore(STORE_NAME, { siteID, token });
+    return getStore({ name: STORE_NAME, siteID, token });
   }
   return getStore(STORE_NAME);
 }
