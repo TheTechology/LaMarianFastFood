@@ -45,6 +45,24 @@ function json(statusCode, body) {
   };
 }
 
+function createStore() {
+  const siteID =
+    process.env.BLOBS_SITE_ID ||
+    process.env.NETLIFY_SITE_ID ||
+    process.env.SITE_ID ||
+    '';
+  const token =
+    process.env.BLOBS_TOKEN ||
+    process.env.NETLIFY_AUTH_TOKEN ||
+    process.env.PERSONAL_ACCESS_TOKEN ||
+    '';
+
+  if (siteID && token) {
+    return getStore(STORE_NAME, { siteID, token });
+  }
+  return getStore(STORE_NAME);
+}
+
 function isAuthorized(event) {
   const legacyUser = 'admin';
   const legacyPass = 'SchimbaParolaAici2026';
@@ -59,11 +77,26 @@ function isAuthorized(event) {
 
 exports.handler = async (event) => {
   const method = event.httpMethod || 'GET';
-  const store = getStore(STORE_NAME);
+  let store;
+  try {
+    store = createStore();
+  } catch (err) {
+    return json(500, {
+      error: 'Blobs not configured',
+      hint: 'Set BLOBS_SITE_ID and BLOBS_TOKEN in Netlify environment variables.'
+    });
+  }
 
   if (method === 'GET') {
-    const current = (await store.get(OFFERS_KEY, { type: 'json' })) || {};
-    return json(200, sanitizeOffersMap(current));
+    try {
+      const current = (await store.get(OFFERS_KEY, { type: 'json' })) || {};
+      return json(200, sanitizeOffersMap(current));
+    } catch (err) {
+      return json(500, {
+        error: 'Blobs read failed',
+        hint: 'Verify BLOBS_SITE_ID/BLOBS_TOKEN and redeploy.'
+      });
+    }
   }
 
   if (method === 'PUT') {
@@ -79,10 +112,17 @@ exports.handler = async (event) => {
     }
 
     const normalized = sanitizeOffersMap(payload);
-    await store.set(OFFERS_KEY, JSON.stringify(normalized), {
-      contentType: 'application/json'
-    });
-    return json(200, normalized);
+    try {
+      await store.set(OFFERS_KEY, JSON.stringify(normalized), {
+        contentType: 'application/json'
+      });
+      return json(200, normalized);
+    } catch (err) {
+      return json(500, {
+        error: 'Blobs write failed',
+        hint: 'Verify BLOBS_SITE_ID/BLOBS_TOKEN and redeploy.'
+      });
+    }
   }
 
   return json(405, { error: 'Method not allowed' });

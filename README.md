@@ -61,6 +61,9 @@ Proiect realizat de Marian Dumitru.
 - autentificare pentru `PUT` prin variabile de mediu Netlify:
   - `ADMIN_USER`
   - `ADMIN_PASS`
+- pentru Netlify Blobs (daca runtime-ul nu injecteaza automat contextul):
+  - `BLOBS_SITE_ID`
+  - `BLOBS_TOKEN`
 - valorile din `admin-oferte.html` (`data-admin-user`, `data-admin-pass`) trebuie sa fie identice cu `ADMIN_USER` si `ADMIN_PASS`.
 
 ## Design implementat
