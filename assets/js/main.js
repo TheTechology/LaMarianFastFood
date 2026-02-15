@@ -812,7 +812,6 @@ if (!d.querySelector('[data-admin-gate]')) {
 if (productCards.length) {
   window.setInterval(() => {
     renderProductOffers();
-    renderOffersZone();
   }, 1000);
   window.setInterval(() => {
     refreshOffersFromServer().then((synced) => {
