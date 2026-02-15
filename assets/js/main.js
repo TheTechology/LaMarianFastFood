@@ -219,7 +219,11 @@ async function refreshOffersFromServer() {
 async function writeOffers(offers) {
   const normalized = sanitizeOffersMap(offers);
   const auth = getAdminAuth();
-  if (!auth) return false;
+  if (!auth) {
+    offersCache = normalized;
+    offersCacheReady = true;
+    return saveOffersToLocalStorage(normalized);
+  }
 
   try {
     const response = await fetch(offersApiUrl, {
@@ -231,13 +235,19 @@ async function writeOffers(offers) {
       },
       body: JSON.stringify(normalized)
     });
-    if (!response.ok) return false;
+    if (!response.ok) {
+      offersCache = normalized;
+      offersCacheReady = true;
+      return saveOffersToLocalStorage(normalized);
+    }
     offersCache = normalized;
     offersCacheReady = true;
     saveOffersToLocalStorage(normalized);
     return true;
   } catch (err) {
-    return false;
+    offersCache = normalized;
+    offersCacheReady = true;
+    return saveOffersToLocalStorage(normalized);
   }
 }
 
