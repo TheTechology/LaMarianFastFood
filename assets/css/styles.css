@@ -3759,6 +3759,13 @@ html[data-theme="light"] .theme-toggle {
     border-radius: 12px;
   }
 
+  .offer-zone-media img {
+    aspect-ratio: auto;
+    object-fit: contain;
+    height: auto;
+    background: rgba(10, 16, 26, 0.42);
+  }
+
   .offer-zone-grid {
     grid-template-columns: 1fr;
   }
