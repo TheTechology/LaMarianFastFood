@@ -132,6 +132,7 @@ filterMenu();
 
 const offerStorageKey = 'lmff-product-offers-v1';
 const offersApiUrl = '/.netlify/functions/offers';
+const isAdminPage = Boolean(d.querySelector('[data-admin-gate]'));
 let offersCache = {};
 let offersCacheReady = false;
 let adminAuthCache = null;
@@ -220,6 +221,7 @@ async function writeOffers(offers) {
   const normalized = sanitizeOffersMap(offers);
   const auth = getAdminAuth();
   if (!auth) {
+    if (isAdminPage) return false;
     offersCache = normalized;
     offersCacheReady = true;
     return saveOffersToLocalStorage(normalized);
@@ -236,6 +238,7 @@ async function writeOffers(offers) {
       body: JSON.stringify(normalized)
     });
     if (!response.ok) {
+      if (isAdminPage) return false;
       offersCache = normalized;
       offersCacheReady = true;
       return saveOffersToLocalStorage(normalized);
@@ -245,6 +248,7 @@ async function writeOffers(offers) {
     saveOffersToLocalStorage(normalized);
     return true;
   } catch (err) {
+    if (isAdminPage) return false;
     offersCache = normalized;
     offersCacheReady = true;
     return saveOffersToLocalStorage(normalized);
