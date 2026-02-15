@@ -492,15 +492,21 @@ function renderOffersZone() {
                 <h3>${item.product.name}</h3>
                 <p class="offer-zone-copy">${item.product.description}</p>
                 <p class="offer-zone-note">${narrative}</p>
+                <p class="offer-zone-stock">
+                  <span class="offer-zone-stock-dot" aria-hidden="true"></span>
+                  ${item.isActive ? 'Valabila in limita stocului disponibil.' : 'Stoc promotional limitat pentru intervalul programat.'}
+                </p>
                 <p class="offer-zone-period">Perioada: ${formatDate(item.offer.start)} - ${formatDate(item.offer.end)}</p>
                 <p class="offer-zone-countdown">
                   <span class="offer-clock" aria-hidden="true"></span>
+                  <span class="offer-zone-countdown-label">${countdownLabel}:</span>
                   <span
                     data-offer-zone-countdown
                     data-offer-zone-start="${item.startTime}"
                     data-offer-zone-end="${item.endTime}"
                     data-offer-zone-active="${item.isActive ? '1' : '0'}"
-                  >${countdownLabel}: ${formatCountdown(remaining)}</span>
+                    class="offer-zone-countdown-value"
+                  >${formatCountdown(remaining)}</span>
                 </p>
                 <a class="btn menu-call-btn" href="tel:+40755516039">${item.isActive ? 'Prinde oferta acum' : 'Seteaza comanda telefonic'}</a>
               </div>
@@ -520,12 +526,20 @@ function updateOffersZoneCountdowns() {
   countdownNodes.forEach((node) => {
     const startTime = Number(node.getAttribute('data-offer-zone-start'));
     const endTime = Number(node.getAttribute('data-offer-zone-end'));
-    const isActive = node.getAttribute('data-offer-zone-active') === '1';
+    const labelNode = node.parentElement?.querySelector('.offer-zone-countdown-label');
     if (!Number.isFinite(startTime) || !Number.isFinite(endTime)) return;
 
+    const isActive = now >= startTime && now < endTime;
+    const isUpcoming = now < startTime;
+    if (labelNode) {
+      labelNode.textContent = isActive ? 'Expira in:' : isUpcoming ? 'Porneste in:' : 'Expirata:';
+    }
+    if (!isActive && !isUpcoming) {
+      node.textContent = '00z 00:00:00';
+      return;
+    }
     const remaining = isActive ? endTime - now : startTime - now;
-    const label = isActive ? 'Expira in' : 'Porneste in';
-    node.textContent = `${label}: ${formatCountdown(remaining)}`;
+    node.textContent = formatCountdown(remaining);
   });
 }
 

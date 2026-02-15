@@ -1087,6 +1087,29 @@ html[data-theme="light"] .hero-info-card {
   color: #ffd7ca;
 }
 
+.offer-zone-stock {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ffe9df;
+  border: 1px solid rgba(255, 196, 173, 0.4);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255, 118, 72, 0.12);
+}
+
+.offer-zone-stock-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #ff9f7a;
+  box-shadow: 0 0 0 4px rgba(255, 159, 122, 0.2);
+}
+
 .offer-zone-period,
 .offer-zone-countdown {
   margin-top: 0;
@@ -1111,9 +1134,38 @@ html[data-theme="light"] .hero-info-card {
 .offer-zone-countdown {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-weight: 700;
   color: #ffe7df;
+  border: 1px solid rgba(255, 189, 166, 0.46);
+  border-radius: 14px;
+  padding: 9px 12px;
+  background:
+    linear-gradient(140deg, rgba(255, 112, 69, 0.24), rgba(255, 166, 129, 0.12)),
+    rgba(255, 255, 255, 0.04);
+  box-shadow:
+    0 10px 20px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.offer-zone-countdown .offer-clock {
+  width: 24px;
+  height: 24px;
+}
+
+.offer-zone-countdown-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #ffe6dd;
+  font-weight: 800;
+}
+
+.offer-zone-countdown-value {
+  font-size: 1.05rem;
+  letter-spacing: 0.015em;
+  font-weight: 800;
+  color: #fff;
 }
 
 .offer-zone-card .menu-call-btn {
@@ -1201,12 +1253,41 @@ html[data-theme="light"] .offer-zone-note {
   color: #935843;
 }
 
+html[data-theme="light"] .offer-zone-stock {
+  color: #8a432a;
+  border-color: #efc2b2;
+  background: rgba(255, 173, 140, 0.22);
+}
+
+html[data-theme="light"] .offer-zone-stock-dot {
+  background: #f1784b;
+  box-shadow: 0 0 0 4px rgba(241, 120, 75, 0.2);
+}
+
 html[data-theme="light"] .offer-zone-period {
   border-color: #efb8a4;
   background:
     linear-gradient(140deg, rgba(255, 150, 114, 0.28), rgba(255, 226, 210, 0.52)),
     rgba(255, 255, 255, 0.94);
   color: #8e3f27;
+}
+
+html[data-theme="light"] .offer-zone-countdown {
+  border-color: #efc0af;
+  background:
+    linear-gradient(140deg, rgba(255, 160, 127, 0.3), rgba(255, 231, 218, 0.6)),
+    rgba(255, 255, 255, 0.94);
+  box-shadow:
+    0 10px 20px rgba(33, 50, 74, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+}
+
+html[data-theme="light"] .offer-zone-countdown-label {
+  color: #8b452c;
+}
+
+html[data-theme="light"] .offer-zone-countdown-value {
+  color: #223b59;
 }
 
 html[data-theme="light"] .offer-zone-media-overlay .product-offer-badge {
@@ -3820,6 +3901,31 @@ html[data-theme="light"] .theme-toggle {
   .offer-zone-period,
   .offer-zone-countdown {
     font-size: 0.86rem;
+  }
+
+  .offer-zone-countdown {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .offer-zone-countdown .offer-clock {
+    width: 21px;
+    height: 21px;
+  }
+
+  .offer-zone-countdown-label {
+    font-size: 0.74rem;
+  }
+
+  .offer-zone-countdown-value {
+    font-size: 0.93rem;
+  }
+
+  .offer-zone-stock {
+    width: 100%;
+    font-size: 0.76rem;
+    border-radius: 12px;
+    justify-content: center;
   }
 
   .offer-zone-state {
