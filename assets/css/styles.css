@@ -3464,7 +3464,11 @@ html[data-theme="light"] .footer-links a:hover {
   }
 
   .admin-mobile-visible {
-    display: none !important;
+    display: inline-flex !important;
+    padding: 10px 14px;
+    font-size: 0.84rem;
+    min-height: 42px;
+    border-radius: 999px;
   }
 }
 
