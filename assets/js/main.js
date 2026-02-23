@@ -16,34 +16,7 @@ if (savedTheme === 'light' || savedTheme === 'dark') {
 }
 
 function initThemeToggle() {
-  const nav = d.querySelector('.nav');
-  if (!nav || nav.querySelector('.theme-toggle')) return;
-
-  const themeBtn = d.createElement('button');
-  themeBtn.type = 'button';
-  themeBtn.className = 'theme-toggle';
-
-  const updateToggle = () => {
-    const isLight = getTheme() === 'light';
-    themeBtn.innerHTML = `<span class="theme-icon" aria-hidden="true">${isLight ? '🌙' : '☀️'}</span>`;
-    themeBtn.setAttribute('aria-label', isLight ? 'Activeaza tema dark' : 'Activeaza tema alba');
-    themeBtn.title = isLight ? 'Activeaza tema dark' : 'Activeaza tema alba';
-  };
-
-  themeBtn.addEventListener('click', () => {
-    const nextTheme = getTheme() === 'light' ? 'dark' : 'light';
-    setTheme(nextTheme);
-    localStorage.setItem(themeKey, nextTheme);
-    updateToggle();
-  });
-
-  const desktopCta = nav.querySelector('.desktop-only');
-  if (desktopCta) {
-    nav.insertBefore(themeBtn, desktopCta);
-  } else {
-    nav.appendChild(themeBtn);
-  }
-  updateToggle();
+  return;
 }
 
 initThemeToggle();
@@ -51,17 +24,45 @@ initThemeToggle();
 const menuToggle = d.querySelector('[data-menu-toggle]');
 const navLinks = d.querySelector('[data-nav-links]');
 if (menuToggle && navLinks) {
+  const closeMobileMenu = () => {
+    navLinks.classList.remove('open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.textContent = 'Meniu';
+  };
+
+  const openMobileMenu = () => {
+    navLinks.classList.add('open');
+    menuToggle.setAttribute('aria-expanded', 'true');
+    menuToggle.textContent = 'Închide';
+  };
+
   menuToggle.addEventListener('click', () => {
     const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
-    menuToggle.setAttribute('aria-expanded', String(!expanded));
-    navLinks.classList.toggle('open');
+    if (expanded) {
+      closeMobileMenu();
+      return;
+    }
+    openMobileMenu();
   });
 
   navLinks.querySelectorAll('a').forEach((link) => {
     link.addEventListener('click', () => {
-      navLinks.classList.remove('open');
-      menuToggle.setAttribute('aria-expanded', 'false');
+      closeMobileMenu();
     });
+  });
+
+  d.addEventListener('click', (event) => {
+    if (!navLinks.classList.contains('open')) return;
+    if (navLinks.contains(event.target) || menuToggle.contains(event.target)) return;
+    closeMobileMenu();
+  });
+
+  d.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeMobileMenu();
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 980) closeMobileMenu();
   });
 }
 
@@ -138,24 +139,80 @@ let offersCacheReady = false;
 let adminAuthCache = null;
 let lastOfferWriteError = '';
 const productCards = Array.from(d.querySelectorAll('[data-product-id]'));
+const productBasePrices = {
+  'burger-black-angus': 40,
+  'double-smash-burger': 35,
+  'meniu-crispy-xl': 35,
+  'portie-cartofi-family': 25,
+  'shaorma-clasica-mare': 30,
+  'shaorma-crispy': 30,
+  'pachet-sosuri-signature': 25,
+  'meniu-strips-hot': 35,
+  'doner-box-clasic': 25,
+  'ciolan-afumat-cuptor': 60,
+  'meniu-4-mici-cartofi-paine-mustar': 35,
+  'clatite-tiramisu': 20,
+  'cafea': 7
+};
 const productCatalog = [
-  { id: 'burger-black-angus', name: 'Burger Black Angus', image: 'assets/img/burger-black-angus.png', description: 'Carne suculenta, cheddar maturat si sos burger signature.' },
-  { id: 'double-smash-burger', name: 'Double Smash Burger', image: 'assets/img/double-smash-burger.png', description: 'Doua straturi de carne, ceapa caramelizata si sos burger house.' },
-  { id: 'shaorma-clasica-mare', name: 'Shaorma Clasica Mare', image: 'assets/img/shaorma-clasica-mare.png', description: 'Pui fraged, cartofi aurii, salata fresh si sos de usturoi.' },
-  { id: 'shaorma-crispy', name: 'Shaorma Crispy', image: 'assets/img/shaorma-crispy.png', description: 'Bucati crispy, salata mix, muraturi si sos picant echilibrat.' },
-  { id: 'meniu-crispy-xl', name: 'Meniu Crispy XL', image: 'assets/img/meniu-crispy-xl.png', description: 'Crispy crocant, cartofi aurii, salata coleslaw si sos la alegere.' },
-  { id: 'meniu-strips-hot', name: 'Meniu Strips Hot', image: 'assets/img/meniu-strips-hot.png', description: 'Strips condimentat, cartofi prajiti si dip cremos de usturoi.' },
-  { id: 'doner-box-clasic', name: 'Doner Box Clasic', image: 'assets/img/doner-box-clasic.png', description: 'Portie echilibrata cu carne, cartofi si sosuri bine dozate.' },
-  { id: 'doner-box-picant', name: 'Doner Box Picant', image: 'assets/img/doner-box-picant.png', description: 'Varianta intensa cu ardei iute, sos chili si topping crispy.' },
-  { id: 'ciolan-afumat-cuptor', name: 'Ciolan Afumat la Cuptor', image: 'assets/img/ciolan-cartofi.png', description: 'Ciolan rumenit lent, cartofi wedges si sos rustic de casa.' },
-  { id: 'portie-cartofi-family', name: 'Portie Cartofi Family', image: 'assets/img/portie-cartofi-family.png', description: 'Cartofi crocanti, ideali pentru partajat, cu doua sosuri incluse.' },
-  { id: 'pachet-sosuri-signature', name: 'Pachet Sosuri Signature', image: 'assets/img/pachet-sosuri-signature.png', description: 'Usturoi, burger, barbecue, picant. Combini exact cum preferi.' }
+  { id: 'burger-black-angus', name: 'Burger de vită cu cartofi', image: 'assets/img/burger-black-angus.png', description: 'Carne suculentă, cheddar maturat și sos burger signature.' },
+  { id: 'double-smash-burger', name: 'Burger crispy cu cartofi', image: 'assets/img/double-smash-burger.png', description: 'Două straturi de carne, ceapă caramelizată și sos burger house.' },
+  { id: 'shaorma-clasica-mare', name: 'Shaorma Mare', image: 'assets/img/shaorma-clasica-mare.png', description: 'Pui fraged, cartofi aurii, salată fresh și sos de usturoi.' },
+  { id: 'shaorma-crispy', name: 'Shaorma Crispy Mare', image: 'assets/img/shaorma-crispy.png', description: 'Bucăți crispy, salată mix, murături și sos picant echilibrat.' },
+  { id: 'meniu-crispy-xl', name: 'Crispy cu cartofi', image: 'assets/img/meniu-crispy-xl.png', description: 'Crispy crocant, cartofi aurii, salată coleslaw și sos la alegere.' },
+  { id: 'meniu-strips-hot', name: 'Aripioare cu cartofi', image: 'assets/img/meniu-strips-hot.png', description: 'Strips condimentat, cartofi prăjiți și dip cremos de usturoi.' },
+  { id: 'doner-box-clasic', name: 'Doner Box', image: 'assets/img/doner-box-clasic.png', description: 'Porție echilibrată cu carne, cartofi și sosuri bine dozate.' },
+  { id: 'ciolan-afumat-cuptor', name: 'Ciolane cu cartofi, castraveți murați și sos de usturoi', image: 'assets/img/ciolan-cartofi.png', description: 'Ciolan rumenit lent, cartofi wedges și sos rustic de casă.' },
+  { id: 'portie-cartofi-family', name: 'Shaorma Mică', image: 'assets/img/shaorma-close.png', description: 'Porție mică de shaorma, potrivită pentru o masă rapidă.' },
+  { id: 'pachet-sosuri-signature', name: 'Shaorma Crispy Mică', image: 'assets/img/shaorma-crispy.png', description: 'Porție mică cu crispy de pui, salată și sos de usturoi.' },
+  { id: 'meniu-4-mici-cartofi-paine-mustar', name: 'Meniu 4 mici cu cartofi, pâine și muștar', image: 'assets/img/meniu-4-mici-cartofi-paine-mustar.png', description: '4 mici la grătar, cartofi prăjiți, pâine proaspătă și muștar.' },
+  { id: 'clatite-tiramisu', name: 'Clătite Tiramisu', image: 'assets/img/clatite-tiramisu.png', description: 'Clătite fine cu cremă tip tiramisu și topping de cacao.' },
+  { id: 'cafea', name: 'Cafea', image: 'assets/img/cafea.png', description: 'Cafea simplă, servită fierbinte.' }
 ];
+
+function getProductBasePrice(productId) {
+  if (!productId) return null;
+  return Number.isFinite(productBasePrices[productId]) ? productBasePrices[productId] : null;
+}
+
+function renderProductPrices() {
+  if (!productCards.length) return;
+
+  productCards.forEach((card) => {
+    const productId = card.getAttribute('data-product-id');
+    const price = getProductBasePrice(productId);
+    let tag = card.querySelector('[data-price-tag]') || card.querySelector('.price-tag');
+
+    if (!price) {
+      if (tag && tag.hasAttribute('data-price-tag')) tag.remove();
+      return;
+    }
+
+    if (!tag) {
+      tag = d.createElement('span');
+      tag.className = 'price-tag';
+      tag.setAttribute('data-price-tag', '');
+      const title = card.querySelector('h3');
+      if (title) {
+        title.insertAdjacentElement('afterend', tag);
+      } else {
+        const callBtn = card.querySelector('.menu-call-btn');
+        if (callBtn) callBtn.insertAdjacentElement('beforebegin', tag);
+        else card.appendChild(tag);
+      }
+    } else {
+      tag.setAttribute('data-price-tag', '');
+    }
+
+    tag.textContent = `Preț: ${price} lei`;
+  });
+}
 
 function sanitizeOffersMap(input) {
   if (!input || typeof input !== 'object') return {};
   const out = {};
   Object.entries(input).forEach(([productId, offer]) => {
+    if (!getProductData(productId)) return;
     const normalized = normalizeOffer(offer);
     if (normalized) out[productId] = normalized;
   });
@@ -322,6 +379,23 @@ function getProductData(productId) {
   return found || null;
 }
 
+function formatPrice(value) {
+  if (!Number.isFinite(value)) return '-';
+  const rounded = Math.round(value * 100) / 100;
+  return Number.isInteger(rounded)
+    ? `${rounded} lei`
+    : `${rounded.toFixed(2).replace('.', ',')} lei`;
+}
+
+function getOfferPriceData(productId, discount) {
+  const basePrice = getProductBasePrice(productId);
+  if (!Number.isFinite(basePrice) || !Number.isFinite(discount)) {
+    return { basePrice: null, finalPrice: null };
+  }
+  const finalPrice = Math.max(0, basePrice * (1 - discount / 100));
+  return { basePrice, finalPrice };
+}
+
 function getOrCreateOfferUI(card) {
   let box = card.querySelector('[data-offer-box]');
   if (box) return box;
@@ -403,14 +477,19 @@ function renderProductOffers() {
     const countdown = box.querySelector('[data-offer-countdown]');
 
     if (badge) badge.textContent = `-${offer.discount}%`;
-    if (state) state.textContent = isActive ? 'Activa acum' : 'Se activeaza curand';
+    if (state) state.textContent = isActive ? 'Activă acum' : 'Se activează curând';
     if (title) {
+      const prices = getOfferPriceData(productId, offer.discount);
+      const priceText =
+        Number.isFinite(prices.basePrice) && Number.isFinite(prices.finalPrice)
+          ? ` (${formatPrice(prices.basePrice)} -> ${formatPrice(prices.finalPrice)})`
+          : '';
       title.textContent = isActive
-        ? `Comanda ${getProductName(productId)} acum si profita de reducerea activa.`
-        : `Planifica pentru ${getProductName(productId)} si fii primul care prinde promotia.`;
+        ? `Comandă ${getProductName(productId)} acum și profită de reducerea activă${priceText}.`
+        : `Planifică pentru ${getProductName(productId)} și fii primul care prinde promoția${priceText}.`;
     }
     if (period) period.textContent = `Perioada: ${formatDate(offer.start)} - ${formatDate(offer.end)}`;
-    if (countdownLabel) countdownLabel.textContent = isActive ? 'Expira in:' : 'Porneste in:';
+    if (countdownLabel) countdownLabel.textContent = isActive ? 'Expiră în:' : 'Pornește în:';
     if (countdown) {
       countdown.textContent = isActive
         ? formatCountdown(endTime - now)
@@ -457,12 +536,12 @@ function renderOffersZone() {
     offersZone.innerHTML = `
       <article class="card offer-empty-card offer-empty-premium">
         <p class="offer-empty-kicker">Status campanii</p>
-        <h3>Urmatoarea reducere este aproape de lansare</h3>
-        <p>Pregatim urmatorul val de promotii. Imediat ce o campanie devine activa sau programata, o vezi aici fara sa cauti in tot meniul.</p>
+        <h3>Următoarea reducere este aproape de lansare</h3>
+        <p>Pregătim următorul val de promoții. Imediat ce o campanie devine activă sau programată, o vezi aici fără să cauți în tot meniul.</p>
         <div class="offer-empty-points">
           <span>Countdown live</span>
           <span>Interval clar de valabilitate</span>
-          <span>Conditii transparente de promotie</span>
+          <span>Condiții transparente de promoție</span>
         </div>
         <a class="btn-outline" href="meniu.html">Vezi produsele din meniu</a>
       </article>
@@ -475,11 +554,16 @@ function renderOffersZone() {
       ${offerItems
         .map((item) => {
           const remaining = item.isActive ? item.endTime - now : item.startTime - now;
-          const stateLabel = item.isActive ? 'Activa acum' : 'Programata';
-          const countdownLabel = item.isActive ? 'Expira in' : 'Porneste in';
+          const stateLabel = item.isActive ? 'Activă acum' : 'Programată';
+          const countdownLabel = item.isActive ? 'Expiră în' : 'Pornește în';
+          const prices = getOfferPriceData(item.product.id, item.offer.discount);
+          const priceNarrative =
+            Number.isFinite(prices.basePrice) && Number.isFinite(prices.finalPrice)
+              ? `Preț standard ${formatPrice(prices.basePrice)} -> preț ofertă ${formatPrice(prices.finalPrice)}.`
+              : '';
           const narrative = item.isActive
-            ? `Ai ${item.offer.discount}% reducere chiar acum, cu comanda simpla si ridicare rapida din locatie.`
-            : `Oferta este programata si iti aduce ${item.offer.discount}% reducere imediat ce incepe intervalul.`;
+            ? `Ai ${item.offer.discount}% reducere chiar acum, cu comandă simplă și ridicare rapidă din locație. ${priceNarrative}`
+            : `Oferta este programată și îți aduce ${item.offer.discount}% reducere imediat ce începe intervalul. ${priceNarrative}`;
           const cardStateClass = item.isActive ? 'is-active' : 'is-upcoming';
           return `
             <article class="card offer-zone-card ${cardStateClass}">
@@ -492,15 +576,15 @@ function renderOffersZone() {
               </div>
               <div class="offer-zone-body">
                 <div class="offer-zone-headline">
-                  <p class="offer-zone-kicker">Oferta limitata in timp</p>
-                  <span class="offer-zone-hint">${item.isActive ? 'Prinde reducerea' : 'Pregateste-te din timp'}</span>
+                  <p class="offer-zone-kicker">Ofertă limitată în timp</p>
+                  <span class="offer-zone-hint">${item.isActive ? 'Prinde reducerea' : 'Pregătește-te din timp'}</span>
                 </div>
                 <h3>${item.product.name}</h3>
                 <p class="offer-zone-copy">${item.product.description}</p>
                 <p class="offer-zone-note">${narrative}</p>
                 <p class="offer-zone-stock">
                   <span class="offer-zone-stock-dot" aria-hidden="true"></span>
-                  ${item.isActive ? 'Valabila in limita stocului disponibil.' : 'Stoc promotional limitat pentru intervalul programat.'}
+                  ${item.isActive ? 'Valabilă în limita stocului disponibil.' : 'Stoc promoțional limitat pentru intervalul programat.'}
                 </p>
                 <p class="offer-zone-period">Perioada: ${formatDate(item.offer.start)} - ${formatDate(item.offer.end)}</p>
                 <p class="offer-zone-countdown">
@@ -514,7 +598,7 @@ function renderOffersZone() {
                     class="offer-zone-countdown-value"
                   >${formatCountdown(remaining)}</span>
                 </p>
-                <a class="btn menu-call-btn" href="tel:+40755516039">${item.isActive ? 'Comanda cu reducere acum' : 'Rezerva telefonic oferta'}</a>
+                <a class="btn menu-call-btn" href="tel:+40755516039">${item.isActive ? 'Comandă cu reducere acum' : 'Rezervă telefonic oferta'}</a>
               </div>
             </article>
           `;
@@ -538,7 +622,7 @@ function updateOffersZoneCountdowns() {
     const isActive = now >= startTime && now < endTime;
     const isUpcoming = now < startTime;
     if (labelNode) {
-      labelNode.textContent = isActive ? 'Expira in:' : isUpcoming ? 'Porneste in:' : 'Expirata:';
+      labelNode.textContent = isActive ? 'Expiră în:' : isUpcoming ? 'Pornește în:' : 'Expirată:';
     }
     if (!isActive && !isUpcoming) {
       node.textContent = '00z 00:00:00';
@@ -552,17 +636,26 @@ function updateOffersZoneCountdowns() {
 function renderOfferList(container) {
   const offers = readOffers();
   const validOffers = Object.entries(offers)
-    .map(([productId, offer]) => ({ productId, offer: normalizeOffer(offer) }))
-    .filter((item) => item.offer);
+    .map(([productId, offer]) => ({
+      productId,
+      offer: normalizeOffer(offer),
+      product: getProductData(productId)
+    }))
+    .filter((item) => item.offer && item.product);
 
   if (!validOffers.length) {
-    container.innerHTML = '<p>Nu exista oferte salvate.</p>';
+    container.innerHTML = '<p>Nu există oferte salvate.</p>';
     return;
   }
 
   container.innerHTML = validOffers
     .map((item) => {
       const { productId, offer } = item;
+      const prices = getOfferPriceData(productId, offer.discount);
+      const pricingMeta =
+        Number.isFinite(prices.basePrice) && Number.isFinite(prices.finalPrice)
+          ? `Preț standard: ${formatPrice(prices.basePrice)} • Preț ofertă: ${formatPrice(prices.finalPrice)}`
+          : 'Preț standard indisponibil pentru acest produs.';
       return `
         <article class="offer-list-item" data-offer-item="${productId}">
           <h4>${getProductName(productId)}</h4>
@@ -580,10 +673,11 @@ function renderOfferList(container) {
               <input class="search" type="datetime-local" data-offer-item-end value="${offer.end}">
             </label>
           </div>
+          <p class="offer-list-item-meta">${pricingMeta}</p>
           <p class="offer-list-item-meta">Activ: ${formatDate(offer.start)} - ${formatDate(offer.end)}</p>
           <div class="offer-list-item-actions">
-            <button class="btn" type="button" data-offer-item-save>Salveaza modificari</button>
-            <button class="btn-outline" type="button" data-offer-item-delete>Sterge oferta</button>
+            <button class="btn" type="button" data-offer-item-save>Salvează modificări</button>
+            <button class="btn-outline" type="button" data-offer-item-delete>Șterge oferta</button>
           </div>
         </article>
       `;
@@ -606,7 +700,13 @@ function initOfferAdmin() {
   }
 
   productSelect.innerHTML = productCatalog
-    .map((product) => `<option value="${product.id}">${product.name}</option>`)
+    .map((product) => {
+      const basePrice = getProductBasePrice(product.id);
+      const label = Number.isFinite(basePrice)
+        ? `${product.name} (${formatPrice(basePrice)})`
+        : product.name;
+      return `<option value="${product.id}">${label}</option>`;
+    })
     .join('');
 
   const setStatus = (message, isError = false) => {
@@ -623,14 +723,24 @@ function initOfferAdmin() {
       discountInput.value = '';
       startInput.value = '';
       endInput.value = '';
-      setStatus('Produs fara oferta activa/programata.');
+      const basePrice = getProductBasePrice(productId);
+      if (Number.isFinite(basePrice)) {
+        setStatus(`Produs fără ofertă activă/programată. Preț standard: ${formatPrice(basePrice)}.`);
+      } else {
+        setStatus('Produs fără ofertă activă/programată.');
+      }
       return;
     }
 
     discountInput.value = String(offer.discount);
     startInput.value = offer.start;
     endInput.value = offer.end;
-    setStatus('Oferta incarcata. Poti modifica procentul sau perioada.');
+    const prices = getOfferPriceData(productId, offer.discount);
+    if (Number.isFinite(prices.basePrice) && Number.isFinite(prices.finalPrice)) {
+      setStatus(`Ofertă încărcată. Preț standard ${formatPrice(prices.basePrice)} -> preț ofertă ${formatPrice(prices.finalPrice)}.`);
+    } else {
+      setStatus('Ofertă încărcată. Poți modifica procentul sau perioada.');
+    }
   };
 
   const syncOffersBeforeAction = async () => {
@@ -647,22 +757,22 @@ function initOfferAdmin() {
     const endDate = parseDate(end);
 
     if (!productId) {
-      setStatus('Selecteaza un produs.', true);
+      setStatus('Selectează un produs.', true);
       return;
     }
     if (!Number.isFinite(discount) || discount < 1 || discount > 95) {
-      setStatus('Reducerea trebuie sa fie intre 1% si 95%.', true);
+      setStatus('Reducerea trebuie să fie între 1% și 95%.', true);
       return;
     }
     if (!startDate || !endDate || endDate <= startDate) {
-      setStatus('Perioada este invalida. Verifica data/ora start-final.', true);
+      setStatus('Perioada este invalidă. Verifică data/ora start-final.', true);
       return;
     }
 
     const offers = await syncOffersBeforeAction();
     offers[productId] = { discount: Math.round(discount), start, end };
     if (!(await writeOffers(offers))) {
-      setStatus(`Eroare la salvare. Verifica functia server pentru oferte.${getOfferWriteError()}`, true);
+      setStatus(`Eroare la salvare. Verifică funcția server pentru oferte.${getOfferWriteError()}`, true);
       return;
     }
 
@@ -670,20 +780,20 @@ function initOfferAdmin() {
     renderProductOffers();
     renderOfferList(offerList);
     fillFormForSelectedProduct();
-    setStatus('Oferta a fost salvata si sincronizata.');
+    setStatus('Ofertă a fost salvată și sincronizată.');
   });
 
   deleteBtn.addEventListener('click', async () => {
     const productId = productSelect.value;
     if (!productId) {
-      setStatus('Selecteaza un produs.', true);
+      setStatus('Selectează un produs.', true);
       return;
     }
 
     const offers = await syncOffersBeforeAction();
     delete offers[productId];
     if (!(await writeOffers(offers))) {
-      setStatus(`Eroare la stergere. Verifica functia server pentru oferte.${getOfferWriteError()}`, true);
+      setStatus(`Eroare la ștergere. Verifică funcția server pentru oferte.${getOfferWriteError()}`, true);
       return;
     }
 
@@ -694,7 +804,7 @@ function initOfferAdmin() {
     renderProductOffers();
     renderOfferList(offerList);
     fillFormForSelectedProduct();
-    setStatus('Oferta a fost stearsa.');
+    setStatus('Ofertă a fost ștearsă.');
   });
 
   offerList.addEventListener('click', async (event) => {
@@ -714,14 +824,14 @@ function initOfferAdmin() {
       const offers = await syncOffersBeforeAction();
       delete offers[productId];
       if (!(await writeOffers(offers))) {
-        setStatus(`Eroare la stergere. Verifica functia server pentru oferte.${getOfferWriteError()}`, true);
+        setStatus(`Eroare la ștergere. Verifică funcția server pentru oferte.${getOfferWriteError()}`, true);
         return;
       }
       await refreshOffersFromServer();
       renderProductOffers();
       renderOfferList(offerList);
       fillFormForSelectedProduct();
-      setStatus(`Oferta pentru ${getProductName(productId)} a fost stearsa.`);
+      setStatus(`Ofertă pentru ${getProductName(productId)} a fost ștearsă.`);
       return;
     }
 
@@ -739,18 +849,18 @@ function initOfferAdmin() {
     const endDate = parseDate(end);
 
     if (!Number.isFinite(discount) || discount < 1 || discount > 95) {
-      setStatus('Reducerea trebuie sa fie intre 1% si 95%.', true);
+      setStatus('Reducerea trebuie să fie între 1% și 95%.', true);
       return;
     }
     if (!startDate || !endDate || endDate <= startDate) {
-      setStatus('Perioada este invalida. Verifica data/ora start-final.', true);
+      setStatus('Perioada este invalidă. Verifică data/ora start-final.', true);
       return;
     }
 
     const offers = await syncOffersBeforeAction();
     offers[productId] = { discount: Math.round(discount), start, end };
     if (!(await writeOffers(offers))) {
-      setStatus(`Eroare la salvare. Verifica functia server pentru oferte.${getOfferWriteError()}`, true);
+      setStatus(`Eroare la salvare. Verifică funcția server pentru oferte.${getOfferWriteError()}`, true);
       return;
     }
 
@@ -758,7 +868,7 @@ function initOfferAdmin() {
     renderProductOffers();
     renderOfferList(offerList);
     fillFormForSelectedProduct();
-    setStatus(`Oferta pentru ${getProductName(productId)} a fost actualizata.`);
+    setStatus(`Ofertă pentru ${getProductName(productId)} a fost actualizată.`);
   });
 
   productSelect.addEventListener('change', fillFormForSelectedProduct);
@@ -772,6 +882,7 @@ function initOfferAdmin() {
 }
 
 renderProductOffers();
+renderProductPrices();
 renderOffersZone();
 updateOffersZoneCountdowns();
 
@@ -782,6 +893,7 @@ async function bootstrapOffers() {
     offersCacheReady = true;
   }
   renderProductOffers();
+  renderProductPrices();
   renderOffersZone();
   updateOffersZoneCountdowns();
 }
@@ -853,7 +965,7 @@ function initAdminGate() {
       return;
     }
 
-    loginStatus.textContent = 'User sau parola invalida.';
+    loginStatus.textContent = 'Utilizator sau parolă invalidă.';
     loginStatus.classList.add('error');
   });
 }
@@ -948,7 +1060,7 @@ if (parallaxEls.length) {
   });
 }
 
-const productLegalNoteText = 'Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.';
+const productLegalNoteText = 'Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.';
 
 function isProductImage(img) {
   const src = img.getAttribute('src') || '';

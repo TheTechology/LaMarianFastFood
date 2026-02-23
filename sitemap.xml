@@ -16,7 +16,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://shaoramadjud.netlify.app/galerie.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -44,6 +43,11 @@
     <loc>https://shaoramadjud.netlify.app/cookies.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://shaoramadjud.netlify.app/informatii-consumator.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://shaoramadjud.netlify.app/declaratie-nutritionala.html</loc>
