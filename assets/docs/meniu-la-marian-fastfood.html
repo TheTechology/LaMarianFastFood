@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meniu La Marian FastFood - PDF</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css?v=20260326-5">
+  <style>
+    .pdf-wrap {
+      width: min(1200px, 96vw);
+      margin: 20px auto 28px;
+    }
+
+    .pdf-head {
+      border: 1px solid var(--box-border);
+      background: var(--box-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--box-shadow);
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .pdf-head-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pdf-head-left img {
+      width: 86px;
+      height: 86px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.18);
+      padding: 3px;
+    }
+
+    .pdf-head-left h1 {
+      margin: 0;
+      font-size: clamp(1.2rem, 2.1vw, 1.8rem);
+      line-height: 1.2;
+    }
+
+    .pdf-head-left p,
+    .pdf-head-right p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .pdf-head-right {
+      text-align: right;
+    }
+
+    .pdf-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .pdf-grid .menu-item {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background:
+        linear-gradient(165deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)),
+        radial-gradient(120% 90% at 100% 0%, rgba(255, 110, 62, 0.12), transparent 70%);
+      box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      padding-bottom: 14px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .pdf-grid .menu-item p {
+      min-height: auto;
+    }
+
+    .pdf-foot {
+      margin-top: 14px;
+      border: 1px solid var(--box-border);
+      background: var(--box-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--box-shadow);
+      padding: 16px;
+    }
+
+    .pdf-foot p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .pdf-foot p + p {
+      margin-top: 8px;
+    }
+
+    .pdf-foot strong {
+      color: var(--text);
+    }
+
+    @media (max-width: 900px) {
+      .pdf-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pdf-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .pdf-head-right {
+        text-align: left;
+      }
+    }
+
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      @page {
+        size: A4;
+        margin: 8mm;
+      }
+
+      body {
+        background: #0e1116 !important;
+      }
+
+      .pdf-wrap {
+        width: 100%;
+        margin: 0;
+      }
+
+      .pdf-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .pdf-grid .menu-item {
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body class="menu-page">
+  <main class="pdf-wrap" aria-label="Meniu PDF La Marian FastFood">
+    <section class="pdf-head" aria-label="Date companie">
+      <div class="pdf-head-left">
+        <img src="../img/logo-fastfood-crop.png" alt="Logo La Marian FastFood" width="86" height="86">
+        <div>
+          <h1>Meniu La Marian FastFood</h1>
+          <p>Str. Revolutiei nr. 4, Adjud • +40 755 516 039</p>
+        </div>
+      </div>
+      <div class="pdf-head-right">
+        <p><strong>AYSADEN-ANGI SRL</strong></p>
+        <p>CUI: 50319287 • Nr. Reg. Com.: J22/400050/1390</p>
+      </div>
+    </section>
+
+    <section class="pdf-grid" aria-label="Produse meniu">
+      <article class="card menu-item" data-product-id="burger-black-angus">
+        <img src="../img/burger-black-angus.png" width="500" height="380" loading="eager" alt="Burger de vita cu cartofi">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Burger de vita cu cartofi</h3>
+        <span class="price-tag" data-price-tag>Pret: 40 lei</span>
+        <p>Carne suculenta, cheddar maturat, salata crocanta si sos special.</p>
+        <p class="menu-meta">Gramaj: 430 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="double-smash-burger">
+        <img src="../img/double-smash-burger.png" width="500" height="380" loading="eager" alt="Burger crispy cu cartofi">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Burger crispy cu cartofi</h3>
+        <span class="price-tag" data-price-tag>Pret: 35 lei</span>
+        <p>Doua straturi de carne, ceapa caramelizata si sos burger house.</p>
+        <p class="menu-meta">Gramaj: 510 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="shaorma-clasica-mare">
+        <img src="../img/shaorma-clasica-mare.png" width="500" height="380" loading="eager" alt="Shaorma Mare">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Shaorma Mare</h3>
+        <span class="price-tag" data-price-tag>Pret: 30 lei</span>
+        <p>Pui fraged, legume proaspete, cartofi si sos usturoi.</p>
+        <p class="menu-meta">Gramaj: 620 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="shaorma-crispy">
+        <img src="../img/shaorma-crispy.png" width="500" height="380" loading="eager" alt="Shaorma Crispy Mare">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Shaorma Crispy Mare</h3>
+        <span class="price-tag" data-price-tag>Pret: 30 lei</span>
+        <p>Bucati crispy, salata mix, muraturi si sos picant echilibrat.</p>
+        <p class="menu-meta">Gramaj: 610 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="meniu-crispy-xl">
+        <img src="../img/meniu-crispy-xl.png" width="500" height="380" loading="eager" alt="Crispy cu cartofi">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Crispy cu cartofi</h3>
+        <span class="price-tag" data-price-tag>Pret: 35 lei</span>
+        <p>Crispy crocant, cartofi aurii, salata coleslaw si sos la alegere.</p>
+        <p class="menu-meta">Gramaj: 560 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="meniu-strips-hot">
+        <img src="../img/meniu-strips-hot.png" width="500" height="380" loading="eager" alt="Aripioare cu cartofi">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Aripioare cu cartofi</h3>
+        <span class="price-tag" data-price-tag>Pret: 35 lei</span>
+        <p>Strips condimentat, cartofi prajiti si dip cremos de usturoi.</p>
+        <p class="menu-meta">Gramaj: 540 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="doner-box-clasic">
+        <img src="../img/doner-box-clasic.png" width="500" height="380" loading="eager" alt="Doner Box">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Doner Box</h3>
+        <span class="price-tag" data-price-tag>Pret: 25 lei</span>
+        <p>Carne doner, cartofi prajiti, salata proaspata si sosuri signature.</p>
+        <p class="menu-meta">Gramaj: 570 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="ciolan-afumat-cuptor">
+        <img src="../img/ciolan-cartofi.png" width="500" height="380" loading="eager" alt="Ciolane cu cartofi, castraveti murati si sos de usturoi">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Ciolane cu cartofi, castraveti murati si sos de usturoi</h3>
+        <span class="price-tag" data-price-tag>Pret: 60 lei</span>
+        <p>Ciolan rumenit lent, cartofi wedges si sos rustic de casa.</p>
+        <p class="menu-meta">Gramaj: 780 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="portie-cartofi-family">
+        <img src="../img/shaorma-close.png" width="500" height="380" loading="eager" alt="Shaorma Mica">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Shaorma Mica</h3>
+        <span class="price-tag" data-price-tag>Pret: 25 lei</span>
+        <p>Portie mica de shaorma, potrivita pentru o masa rapida.</p>
+        <p class="menu-meta">Gramaj: 450 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="pachet-sosuri-signature">
+        <img src="../img/shaorma-crispy.png" width="500" height="380" loading="eager" alt="Shaorma Crispy Mica">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Shaorma Crispy Mica</h3>
+        <span class="price-tag" data-price-tag>Pret: 25 lei</span>
+        <p>Portie mica cu crispy de pui, salata si sos de usturoi.</p>
+        <p class="menu-meta">Gramaj: 440 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="meniu-4-mici-cartofi-paine-mustar">
+        <img src="../img/meniu-4-mici-cartofi-paine-mustar.png" width="500" height="380" loading="eager" alt="Meniu 4 mici cu cartofi, paine si mustar">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Meniu 4 mici cu cartofi, paine si mustar</h3>
+        <span class="price-tag" data-price-tag>Pret: 35 lei</span>
+        <p>4 mici la gratar, cartofi prajiti, paine proaspata si mustar.</p>
+        <p class="menu-meta">Gramaj: 690 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="clatite-tiramisu">
+        <img src="../img/clatite-tiramisu.png" width="500" height="380" loading="eager" alt="Clatite Tiramisu">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Clatite Tiramisu</h3>
+        <span class="price-tag" data-price-tag>Pret: 20 lei</span>
+        <p>Clatite fine cu crema tip tiramisu si topping de cacao.</p>
+        <p class="menu-meta">Gramaj: 260 g</p>
+      </article>
+
+      <article class="card menu-item" data-product-id="cafea">
+        <img src="../img/cafea.png" width="500" height="380" loading="eager" alt="Cafea">
+        <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia usor in functie de preparare.</p>
+        <h3>Cafea</h3>
+        <span class="price-tag" data-price-tag>Pret: 7 lei</span>
+        <p>Cafea simpla, servita fierbinte.</p>
+        <p class="menu-meta">Volum: 180 ml</p>
+      </article>
+    </section>
+
+    <section class="pdf-foot" aria-label="Informatii legale">
+      <p><strong>Informații legale:</strong> prețurile afișate sunt orientative până la confirmarea comenzii.</p>
+      <p>Pentru sesizări și solicitări GDPR: +40 755 516 039 • Politica GDPR • ANSPDCP • ANPC • SAL ANPC.</p>
+      <p><strong>Adresă locație:</strong> Str. Revoluției nr. 4, Adjud, Vrancea.</p>
+    </section>
+  </main>
+</body>
+</html>
