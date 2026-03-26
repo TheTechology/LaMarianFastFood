@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="assets/css/styles.css?v=20260223-13">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
 </head>
-<body>
+<body class="menu-page">
   <div class="topbar">Comenzi telefonice rapide: <a href="tel:+40755516039">+40 755 516 039</a></div>
   <header>
     <nav class="nav container">
@@ -86,7 +86,30 @@
         <p>Burgeri, shaorma, crispy, doner box, ciolan afumat și porții cu sosuri. Apasă pe produsul dorit și sună direct pentru comandă rapidă.</p>
       </div>
 
-      <div class="menu-controls reveal">
+      <div class="print-only print-brand">
+        <div class="print-brand-left">
+          <img src="assets/img/logo-fastfood-crop.png" alt="La Marian FastFood" width="96" height="96">
+          <div>
+            <strong>La Marian FastFood</strong>
+            <p>Str. Revoluției nr. 4, Adjud • +40 755 516 039</p>
+          </div>
+        </div>
+        <div class="print-brand-right">
+          <p><strong>AYSADEN-ANGI SRL</strong></p>
+          <p>CUI: 50319287 • Nr. Reg. Com.: J22/400050/1390</p>
+        </div>
+      </div>
+
+      <div class="download-row reveal">
+        <button class="btn download-menu-btn print-hidden" type="button" data-download-menu>Descarcă meniu PDF</button>
+        <p class="download-hint print-hidden">PDF identic cu meniul (fără butoane de comandă), cu logo, produse și note legale.</p>
+      </div>
+
+      <div class="menu-filters-mobile reveal">
+        <button class="filter-toggle" type="button" data-filter-toggle>Filtre rapide</button>
+      </div>
+
+      <div class="menu-controls reveal" data-filter-drawer>
         <div class="filter-chips" aria-label="Filtru rapid categorii">
           <button type="button" class="chip active" data-filter-chip="toate">Toate</button>
           <button type="button" class="chip" data-filter-chip="burgeri">Burgeri</button>
@@ -110,6 +133,7 @@
           <option value="bauturi">Băuturi calde</option>
         </select>
         <input class="search" data-menu-search type="search" placeholder="Caută produs (ex: burger, crispy, sos)..." aria-label="Caută în meniu">
+        <button class="filter-close" type="button" data-filter-close aria-label="Închide filtre">Închide</button>
       </div>
 
       <div class="grid-3">
@@ -118,6 +142,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Burger de vită cu cartofi</h3>
           <p>Carne suculentă, cheddar maturat, salată crocantă și sos special.</p>
+          <p class="menu-meta">Gramaj: 430 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="burgeri" data-product-id="double-smash-burger">
@@ -125,6 +150,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Burger crispy cu cartofi</h3>
           <p>Două straturi de carne, ceapă caramelizată și sos burger house.</p>
+          <p class="menu-meta">Gramaj: 510 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="shaorma" data-product-id="shaorma-clasica-mare">
@@ -132,6 +158,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Shaorma Mare</h3>
           <p>Pui fraged, legume proaspete, cartofi și sos usturoi.</p>
+          <p class="menu-meta">Gramaj: 620 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="shaorma" data-product-id="shaorma-crispy">
@@ -139,6 +166,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Shaorma Crispy Mare</h3>
           <p>Bucăți crispy, salată mix, murături și sos picant echilibrat.</p>
+          <p class="menu-meta">Gramaj: 610 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="crispy" data-product-id="meniu-crispy-xl">
@@ -146,6 +174,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Crispy cu cartofi</h3>
           <p>Crispy crocant, cartofi aurii, salată coleslaw și sos la alegere.</p>
+          <p class="menu-meta">Gramaj: 560 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="crispy" data-product-id="meniu-strips-hot">
@@ -153,6 +182,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Aripioare cu cartofi</h3>
           <p>Strips condimentat, cartofi prăjiți și dip cremos de usturoi.</p>
+          <p class="menu-meta">Gramaj: 540 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="doner" data-product-id="doner-box-clasic">
@@ -160,6 +190,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Doner Box</h3>
           <p>Carne doner, cartofi prăjiți, salată proaspătă și sosuri signature.</p>
+          <p class="menu-meta">Gramaj: 570 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="ciolan" data-product-id="ciolan-afumat-cuptor">
@@ -167,6 +198,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Ciolane cu cartofi, castraveți murați și sos de usturoi</h3>
           <p>Ciolan rumenit lent, cartofi wedges și sos rustic de casă.</p>
+          <p class="menu-meta">Gramaj: 780 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="shaorma" data-product-id="portie-cartofi-family">
@@ -174,6 +206,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Shaorma Mică</h3>
           <p>Porție mică de shaorma, potrivită pentru o masă rapidă.</p>
+          <p class="menu-meta">Gramaj: 450 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="shaorma" data-product-id="pachet-sosuri-signature">
@@ -181,6 +214,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Shaorma Crispy Mică</h3>
           <p>Porție mică cu crispy de pui, salată și sos de usturoi.</p>
+          <p class="menu-meta">Gramaj: 440 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="gratar" data-product-id="meniu-4-mici-cartofi-paine-mustar">
@@ -188,6 +222,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Meniu 4 mici cu cartofi, pâine și muștar</h3>
           <p>4 mici la grătar, cartofi prăjiți, pâine proaspătă și muștar.</p>
+          <p class="menu-meta">Gramaj: 690 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="desert" data-product-id="clatite-tiramisu">
@@ -195,6 +230,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Clătite Tiramisu</h3>
           <p>Clătite fine cu cremă tip tiramisu și topping de cacao.</p>
+          <p class="menu-meta">Gramaj: 260 g</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
         <article class="card menu-item reveal" data-menu-item data-category="bauturi" data-product-id="cafea">
@@ -202,6 +238,7 @@
           <p class="image-legal-note">Imaginile produselor au rol de prezentare. Aspectul final poate varia ușor în funcție de preparare.</p>
           <h3>Cafea</h3>
           <p>Cafea simplă, servită fierbinte.</p>
+          <p class="menu-meta">Volum: 180 ml</p>
           <a class="btn menu-call-btn" href="tel:+40755516039">Sună pentru comandă</a>
         </article>
       </div>
@@ -311,6 +348,6 @@
     </div>
   </div>
 
-  <script src="assets/js/main.js?v=20260223-5" defer></script>
+  <script src="assets/js/main.js?v=20260326-1" defer></script>
 </body>
 </html>

@@ -98,6 +98,10 @@ const menuCategory = d.querySelector('[data-menu-category]');
 const menuSearch = d.querySelector('[data-menu-search]');
 const menuItems = d.querySelectorAll('[data-menu-item]');
 const filterChips = d.querySelectorAll('[data-filter-chip]');
+const filterDrawer = d.querySelector('[data-filter-drawer]');
+const filterToggleBtn = d.querySelector('[data-filter-toggle]');
+const filterCloseBtn = d.querySelector('[data-filter-close]');
+const downloadMenuBtn = d.querySelector('[data-download-menu]');
 
 function filterMenu() {
   if (!menuItems.length) return;
@@ -130,6 +134,35 @@ menuCategory?.addEventListener('change', () => {
 });
 
 filterMenu();
+
+function openFilterDrawer() {
+  if (!filterDrawer) return;
+  filterDrawer.classList.add('drawer-open');
+  document.body.classList.add('drawer-lock');
+}
+
+function closeFilterDrawer() {
+  if (!filterDrawer) return;
+  filterDrawer.classList.remove('drawer-open');
+  document.body.classList.remove('drawer-lock');
+}
+
+filterToggleBtn?.addEventListener('click', openFilterDrawer);
+filterCloseBtn?.addEventListener('click', closeFilterDrawer);
+
+d.addEventListener('click', (ev) => {
+  if (!filterDrawer || !filterDrawer.classList.contains('drawer-open')) return;
+  if (filterDrawer.contains(ev.target) || filterToggleBtn?.contains(ev.target)) return;
+  closeFilterDrawer();
+});
+
+d.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Escape') closeFilterDrawer();
+});
+
+downloadMenuBtn?.addEventListener('click', () => {
+  window.print();
+});
 
 const offerStorageKey = 'lmff-product-offers-v1';
 const offersApiUrl = '/.netlify/functions/offers';
