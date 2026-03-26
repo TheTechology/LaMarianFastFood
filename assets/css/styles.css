@@ -2078,6 +2078,12 @@ html[data-theme="light"] .product-offer-countdown {
     margin-bottom: 12px;
   }
 
+  /* forțăm vizibilitatea elementelor cu animație */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
   .section {
     padding: 32px 0;
   }
