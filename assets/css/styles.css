@@ -2011,7 +2011,7 @@ html[data-theme="light"] .product-offer-countdown {
 
   @page {
     size: A4;
-    margin: 10mm;
+    margin: 8mm;
   }
 
   body {
@@ -2065,14 +2065,17 @@ html[data-theme="light"] .product-offer-countdown {
   }
 
   .menu-section .grid-3 {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 14px;
+    display: block;
+    column-count: 2;
+    column-gap: 12px;
   }
 
   .menu-section .grid-3 .menu-item {
+    display: inline-block;
+    width: 100%;
     break-inside: avoid;
     page-break-inside: avoid;
+    margin-bottom: 12px;
   }
 
   .section {
