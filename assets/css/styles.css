@@ -2014,9 +2014,11 @@ html[data-theme="light"] .product-offer-countdown {
     color: #f6f7fb;
   }
 
+  /* ascundem tot ce nu ține de listarea produselor */
   .topbar,
   header,
   .offers-section,
+  .page-hero,
   .menu-filters-mobile,
   .menu-controls,
   .menu-call-btn,
@@ -2029,7 +2031,11 @@ html[data-theme="light"] .product-offer-countdown {
   .filter-toggle,
   .menu-controls .filter-chips,
   .menu-controls .select,
-  .menu-controls .search {
+  .menu-controls .search,
+  .section:not(.menu-section),
+  .seo-block,
+  .legal-links,
+  .offers-zone {
     display: none !important;
   }
 
@@ -2052,6 +2058,17 @@ html[data-theme="light"] .product-offer-countdown {
   .grid-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
+  }
+
+  .container {
+    width: auto;
+    margin: 0;
+    padding: 0 16mm;
+  }
+
+  /* Afișăm doar produsele (și brand/footer). Secțiunile SEO și CTA dispar la print. */
+  .menu-page .section-small {
+    display: none !important;
   }
 
   .menu-item {
