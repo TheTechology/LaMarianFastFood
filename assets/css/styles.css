@@ -2009,6 +2009,11 @@ html[data-theme="light"] .product-offer-countdown {
     print-color-adjust: exact;
   }
 
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
   body {
     background: #0e1116 !important;
     color: #f6f7fb;
@@ -2045,6 +2050,24 @@ html[data-theme="light"] .product-offer-countdown {
 
   .print-hidden {
     display: none !important;
+  }
+
+  /* asigurăm că secțiunea de meniu rămâne vizibilă */
+  .menu-section {
+    display: block !important;
+  }
+
+  .menu-section .container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .menu-section .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px;
   }
 
   .section {
